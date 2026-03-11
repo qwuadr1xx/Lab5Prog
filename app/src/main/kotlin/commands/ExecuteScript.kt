@@ -43,14 +43,13 @@ class ExecuteScript(
 
             console.setFileMode(fileName)
 
-            var line = console.readLine()
-            while (line.isNotEmpty()) {
+            do {
+                var line = console.readLine()
                 line = line.trim()
                 if (line.isNotEmpty()) {
                     if (commandManager.getCommand(line).execute() == ExitCode.ERROR) return ExitCode.ERROR
                 }
-                line = console.readLine()
-            }
+            } while (line.isNotEmpty())
 
             return ExitCode.OK
         } catch (e: ScriptErrorException) {
