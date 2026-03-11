@@ -10,8 +10,9 @@ import ru.qwuadrixx.app.utils.ExitCode
 import kotlin.system.exitProcess
 
 fun main() {
-    System.setProperty("SAVE_FILE_NAME", "/Users/qwuadrixx/downloads/testEnv.txt")
-    val fileName = System.getProperty("SAVE_FILE_NAME")
+    //Самому задать переменную окружения
+    val fileName = System.getenv("SAVE_FILE_NAME")
+    println(fileName)
     val console = Console()
     val commandManager = CommandManager()
     val fileManager = FileManager(console = console, fileName = fileName)
@@ -42,12 +43,10 @@ fun main() {
             val command = console.readLine()
             val exitCode = commandManager.getCommand(command).execute()
 
-            if (exitCode == ExitCode.EXIT) {
-                exitProcess(1)
-            } else if (exitCode == ExitCode.ERROR) {
-                println("Команда $command не выполнена")
-            } else {
-                println("Команда $command выполнена успешно")
+            when (exitCode) {
+                ExitCode.EXIT -> exitProcess(1)
+                ExitCode.ERROR -> println("Команда $command не выполнена")
+                ExitCode.OK -> println("Команда $command выполнена успешно")
             }
         } catch (e: CommandNotFoundException) {
             console.printError(e)

@@ -16,7 +16,7 @@ class Update(private val collectionManager: ICollectionManager, private val cons
                 val id = console.readLine().toInt()
                 ensure(id > 0) { "Значение id должно быть больше 0" }
 
-                val studyGroup = StudyGroupAsker(console).ask()
+                val studyGroup = StudyGroupAsker(console).ask(id)
 
                 collectionManager.updateById(id, studyGroup)
 

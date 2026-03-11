@@ -31,6 +31,19 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
             groupAdmin = groupAdmin)
     }
 
+    fun ask(id: Int): StudyGroup {
+        val name = askName()
+        val coordinates = askCoordinates()
+        val studentsCount = askStudentsCount()
+        val expelledStudents = askExpelledStudents()
+        val averageMark = askAverageMark()
+        val semester = askSemester()
+        val groupAdmin = askGroupAdmin()
+        return StudyGroup(id = id, name = name, coordinates = coordinates, studentsCount = studentsCount,
+            expelledStudents = expelledStudents, averageMark = averageMark, semesterEnum = semester,
+            groupAdmin = groupAdmin)
+    }
+
     private fun askName(): String {
         console.printLine("Пожалуйста, введите название группы(не пустое):")
         while (true) {
