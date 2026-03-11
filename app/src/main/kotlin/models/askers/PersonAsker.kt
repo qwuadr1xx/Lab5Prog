@@ -1,5 +1,6 @@
 package ru.qwuadrixx.app.models.askers
 
+import ru.qwuadrixx.app.exception.ScriptErrorException
 import ru.qwuadrixx.app.exception.ValidationException
 import ru.qwuadrixx.app.models.Person
 import ru.qwuadrixx.app.utils.IConsole
@@ -35,6 +36,7 @@ class PersonAsker(private val console: IConsole) : Asker<Person> {
 
                 return name
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }
@@ -51,6 +53,7 @@ class PersonAsker(private val console: IConsole) : Asker<Person> {
                 val date = stringToDate(line)
                 return date
             } catch (e: DateTimeParseException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова в формате dd:MM:yyyy HH:mm:")
             }
@@ -65,8 +68,11 @@ class PersonAsker(private val console: IConsole) : Asker<Person> {
                 if (line.isEmpty()) return null
 
                 val height = line.toDouble()
+                ensure(height > 0) { "Height должен быть > 0" }
+
                 return height
             } catch (e: NumberFormatException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }
@@ -84,6 +90,7 @@ class PersonAsker(private val console: IConsole) : Asker<Person> {
                     "PassportID не может быть пустым, его длина должна быть между 7 и 48" }
                 return passportID
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }

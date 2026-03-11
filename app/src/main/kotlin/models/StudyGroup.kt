@@ -24,7 +24,7 @@ data class StudyGroup(
     init {
         ensure(id > 0) { "id должен быть > 0" }
         ensure(name.isNotBlank()) { "Name должно быть не пустым" }
-        ensure(studentsCount == null || studentsCount > 0) { "StudentsCount должен быть > 0 или нул" }
+        ensure(studentsCount == null || studentsCount > 0) { "StudentsCount должен быть > 0 или null" }
         ensure(expelledStudents > 0) { "ExpelledStudents должен быть > 0" }
         ensure(averageMark > 0) { "AverageMark должен быть > 0" }
     }

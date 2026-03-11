@@ -20,6 +20,7 @@ class Console(
      * @return прочтенная строка
      */
     override fun readLine(): String {
+        if (!fileMode) print(">")
         return reader.readLine()?.trim() ?: ""
     }
 
@@ -36,7 +37,7 @@ class Console(
      * @param obj
      */
     override fun printObject(obj: Any) {
-        println(obj)
+        println(obj.toString())
     }
 
     /**
@@ -44,9 +45,11 @@ class Console(
      * @param exc
      */
     override fun printError(exc: Exception) {
-        val javaClass = exc.javaClass.simpleName
-        val message = exc.message
-        println("Произошла ошибка $javaClass, сообщение ошибки: $message")
+        println("Произошла ошибка ${exc.javaClass.simpleName}, сообщение ошибки: ${exc.message}")
+    }
+
+    override fun printError(exc: Exception, message: String) {
+        println("Произошла ошибка ${exc.javaClass.simpleName}, сообщение ошибки: $message")
     }
 
     /**
@@ -55,6 +58,7 @@ class Console(
      */
     override fun setFileMode(fileName: String) {
         if (!File(fileName).exists()) throw FileNotFoundException("Файл $fileName не найден")
+        if (File(fileName).isDirectory) throw FileNotFoundException("$fileName является директорией")
         reader = BufferedReader(InputStreamReader(FileInputStream(fileName), StandardCharsets.UTF_8))
         fileMode = true
     }

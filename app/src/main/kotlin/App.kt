@@ -20,6 +20,7 @@ fun main() {
     commandManager.apply {
         register(Add(collectionManager, console))
         register(AddIfMax(collectionManager, console))
+        register(Show(collectionManager, console))
         register(AverageOfAverageMark(collectionManager, console))
         register(Clear(collectionManager, console))
         register(CountLessThanAverageMark(collectionManager, console))
@@ -43,6 +44,10 @@ fun main() {
 
             if (exitCode == ExitCode.EXIT) {
                 exitProcess(1)
+            } else if (exitCode == ExitCode.ERROR) {
+                println("Команда $command не выполнена")
+            } else {
+                println("Команда $command выполнена успешно")
             }
         } catch (e: CommandNotFoundException) {
             console.printError(e)

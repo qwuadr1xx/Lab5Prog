@@ -1,5 +1,6 @@
 package ru.qwuadrixx.app.models.askers
 
+import ru.qwuadrixx.app.exception.ScriptErrorException
 import ru.qwuadrixx.app.exception.ValidationException
 import ru.qwuadrixx.app.models.Coordinates
 import ru.qwuadrixx.app.models.Person
@@ -40,6 +41,7 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
 
                 return name
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }
@@ -59,12 +61,14 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
 
                 val studentsCount = line.toLong()
 
-                ensure(studentsCount > 0) { "StudentsCount должен быть > 0 или нул" }
+                ensure(studentsCount > 0) { "StudentsCount должен быть > 0 или null" }
                 return studentsCount
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }
@@ -81,9 +85,11 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
 
                 return expelledStudents
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }
@@ -100,9 +106,11 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
 
                 return averageMark
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }

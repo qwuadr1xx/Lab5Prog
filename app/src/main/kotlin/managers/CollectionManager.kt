@@ -2,7 +2,7 @@ package ru.qwuadrixx.app.managers
 
 import ru.qwuadrixx.app.exception.NotFoundException
 import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.Console
+import ru.qwuadrixx.app.utils.IConsole
 import java.time.LocalDateTime
 import java.util.*
 
@@ -12,7 +12,7 @@ import java.util.*
  */
 class CollectionManager(
     override val collection: Vector<StudyGroup> = Vector(),
-    private val console: Console,
+    private val console: IConsole,
     override var lastInitTime: LocalDateTime = LocalDateTime.now(),
     override var lastEditTime: LocalDateTime = LocalDateTime.now(),
     private val fileManager: IFileManager

@@ -1,5 +1,6 @@
 package ru.qwuadrixx.app.models.askers
 
+import ru.qwuadrixx.app.exception.ScriptErrorException
 import ru.qwuadrixx.app.models.Semester
 import ru.qwuadrixx.app.utils.IConsole
 
@@ -19,7 +20,7 @@ class SemesterAsker(private val console: IConsole) : Asker<Semester?> {
 
     private fun askSemester(): Semester? {
         console.printLine("Пожалуйста: введите один из представленных семестров")
-        console.printObject(Semester.entries.toTypedArray().toString())
+        console.printLine(Semester.entries.toString())
         while (true) {
             try {
                 val line = console.readLine()
@@ -29,6 +30,7 @@ class SemesterAsker(private val console: IConsole) : Asker<Semester?> {
 
                 return semester
             } catch (e: IllegalArgumentException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }

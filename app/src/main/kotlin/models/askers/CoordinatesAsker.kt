@@ -1,5 +1,6 @@
 package ru.qwuadrixx.app.models.askers
 
+import ru.qwuadrixx.app.exception.ScriptErrorException
 import ru.qwuadrixx.app.exception.ValidationException
 import ru.qwuadrixx.app.models.Coordinates
 import ru.qwuadrixx.app.utils.IConsole
@@ -29,9 +30,11 @@ class CoordinatesAsker(private val console: IConsole) : Asker<Coordinates> {
 
                 return line.toLong()
             } catch (e: ValidationException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
+                if (console.fileMode) throw ScriptErrorException(e.message)
                 console.printError(e)
                 console.printLine("Попробуйте снова:")
             }

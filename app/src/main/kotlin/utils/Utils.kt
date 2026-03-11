@@ -1,22 +1,23 @@
 package ru.qwuadrixx.app.utils
 
+import ru.qwuadrixx.app.commands.Command
 import ru.qwuadrixx.app.managers.ICollectionManager
 import java.time.LocalDateTime
 
-class PrettyMap<K, V>(
-    private val innerMap: MutableMap<K, V> = mutableMapOf()
-) : MutableMap<K, V> by innerMap {
+class PrettyMap(
+    private val innerMap: MutableMap<String, Command> = mutableMapOf()
+) : MutableMap<String, Command> by innerMap {
 
     override fun toString(): String {
-        return innerMap.entries.joinToString(separator = "\n") { (key, value) ->
-            "$key : $value"
+        return innerMap.entries.joinToString(separator = "\n") { (key: String, value: Command) ->
+            "$key : ${value.description}"
         }
     }
 }
 
 class CollectionInfo(
     private val collectionManager: ICollectionManager,
-    private val collectionClass: String = collectionManager.collection.javaClass.toString(),
+    private val collectionClass: String = collectionManager.collection.javaClass.simpleName,
     private val lastInitTime: LocalDateTime = collectionManager.lastInitTime,
     private val lastEditTime: LocalDateTime = collectionManager.lastEditTime,
     private val size: Int = collectionManager.collection.size
