@@ -4,10 +4,18 @@ import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.utils.ExitCode
 import ru.qwuadrixx.app.utils.IConsole
 
+/**
+ * Команда average_of_average_mark
+ * @author qwuadrixx
+ */
 class AverageOfAverageMark(private val collectionManager: ICollectionManager, private val console: IConsole) : Command(
     name = "average_of_average_mark",
     description = "Вывести среднее значение поля averageMark для всех элементов коллекции"
 ) {
+    /**
+     * Метод исполнения команды
+     * @return ExitCode
+     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды average_of_average_mark")
 
@@ -21,4 +29,10 @@ class AverageOfAverageMark(private val collectionManager: ICollectionManager, pr
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод отмены команды
+     * @return ExitCode
+     */
+    override fun undo(): ExitCode = ExitCode.OK
 }

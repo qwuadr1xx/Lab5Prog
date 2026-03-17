@@ -10,4 +10,8 @@ interface IFileManager {
     fun writeCollection(collection: Collection<StudyGroup>)
 
     fun readCollection(): Collection<StudyGroup>?
+
+    fun readBytes(): ByteArray
+
+    fun writeBytes(byteArray: ByteArray)
 }

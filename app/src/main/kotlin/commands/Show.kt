@@ -4,10 +4,18 @@ import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.utils.ExitCode
 import ru.qwuadrixx.app.utils.IConsole
 
+/**
+ * Команда show
+ * @author qwuadrixx
+ */
 class Show(private val collectionManager: ICollectionManager, private val console: IConsole) : Command(
     name = "show",
     description = "Вывести в стандартный поток вывода все элементы коллекции в строковом представлении"
 ) {
+    /**
+     * Метод исполнения команды
+     * @return ExitCode
+     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды show")
         try {
@@ -19,4 +27,10 @@ class Show(private val collectionManager: ICollectionManager, private val consol
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод отмены команды
+     * @return ExitCode
+     */
+    override fun undo(): ExitCode = ExitCode.OK
 }

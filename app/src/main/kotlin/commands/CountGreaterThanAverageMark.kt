@@ -4,11 +4,19 @@ import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.utils.ExitCode
 import ru.qwuadrixx.app.utils.IConsole
 
+/**
+ * Команда count_greater_than_average_mark
+ * @author qwuadrixx
+ */
 class CountGreaterThanAverageMark(private val collectionManager: ICollectionManager, private val console: IConsole) :
     Command(
         name = "count_greater_than_average_mark",
         description = "Вывести количество элементов, значение поля averageMark которых меньше заданного"
     ) {
+    /**
+     * Метод исполнения команды
+     * @return ExitCode
+     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды count_greater_than_average_mark")
 
@@ -27,4 +35,10 @@ class CountGreaterThanAverageMark(private val collectionManager: ICollectionMana
             }
         }
     }
+
+    /**
+     * Метод отмены команды
+     * @return ExitCode
+     */
+    override fun undo(): ExitCode = ExitCode.OK
 }

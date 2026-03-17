@@ -25,28 +25,26 @@ class FileManager(
      * Метод для записи коллекции в файл
      */
     override fun writeCollection(collection: Collection<StudyGroup>) {
-        val writer = PrintWriter(File(fileName))
-
-        collection.forEach {
-            val row = listOf(
-                it.id.toString(),
-                it.name,
-                it.coordinates.x.toString(),
-                it.coordinates.y.toString(),
-                it.creationDate.toString(),
-                it.studentsCount?.toString() ?: "",
-                it.expelledStudents.toString(),
-                it.averageMark.toString(),
-                it.semesterEnum?.name ?: "",
-                it.groupAdmin?.name ?: "",
-                it.groupAdmin?.birthday?.toString() ?: "",
-                it.groupAdmin?.height?.toString() ?: "",
-                it.groupAdmin?.passportID ?: ""
-            )
-            writer.println(row.joinToString(","))
+        PrintWriter(File(fileName)).use { writer ->
+            collection.forEach {
+                val row = listOf(
+                    it.id.toString(),
+                    it.name,
+                    it.coordinates.x.toString(),
+                    it.coordinates.y.toString(),
+                    it.creationDate.toString(),
+                    it.studentsCount?.toString() ?: "",
+                    it.expelledStudents.toString(),
+                    it.averageMark.toString(),
+                    it.semesterEnum?.name ?: "",
+                    it.groupAdmin?.name ?: "",
+                    it.groupAdmin?.birthday?.toString() ?: "",
+                    it.groupAdmin?.height?.toString() ?: "",
+                    it.groupAdmin?.passportID ?: ""
+                )
+                writer.println(row.joinToString(","))
+            }
         }
-
-        writer.close()
     }
 
     /**
@@ -56,52 +54,55 @@ class FileManager(
         try {
             val reader = InputStreamReader(FileInputStream(fileName), StandardCharsets.UTF_8)
 
-            val collection = reader.readLines().stream()
-                .filter { it.isNotBlank() }
-                .map { it ->
-                    val parts = it.split(',', ignoreCase = false, limit = 13)
+            val collection =
+                InputStreamReader(FileInputStream(fileName), StandardCharsets.UTF_8).use { inputStreamReader ->
+                    inputStreamReader.readLines().stream()
+                        .filter { it.isNotBlank() }
+                        .map { it ->
+                            val parts = it.split(',', ignoreCase = false, limit = 13)
 
-                    val id = parts[0]
-                    val name = parts[1]
-                    val coordinatesX = parts[2]
-                    val coordinatesY = parts[3]
-                    val creationDate = parts[4]
-                    val studentsCount = parts[5]
-                    val expelledStudents = parts[6]
-                    val averageMark = parts[7]
-                    val semesterEnum = parts[8]
-                    val personName = parts[9]
-                    val personBirthday = parts[10]
-                    val personHeight = parts[11]
-                    val personPassportID = parts[12]
+                            val id = parts[0]
+                            val name = parts[1]
+                            val coordinatesX = parts[2]
+                            val coordinatesY = parts[3]
+                            val creationDate = parts[4]
+                            val studentsCount = parts[5]
+                            val expelledStudents = parts[6]
+                            val averageMark = parts[7]
+                            val semesterEnum = parts[8]
+                            val personName = parts[9]
+                            val personBirthday = parts[10]
+                            val personHeight = parts[11]
+                            val personPassportID = parts[12]
 
-                    StudyGroup(
-                        id = id.toInt(),
-                        name = name,
-                        coordinates = Coordinates(
-                            x = coordinatesX.toLong(),
-                            y = coordinatesY.toDouble()
-                        ),
-                        creationDate = LocalDateTime.parse(creationDate),
-                        studentsCount = studentsCount.ifEmpty { null }?.toLong(),
-                        expelledStudents = expelledStudents.toInt(),
-                        averageMark = averageMark.toLong(),
-                        semesterEnum = semesterEnum.ifEmpty { null }
-                            ?.let { Semester.valueOf(it) },
-                        groupAdmin = personName.ifEmpty { null }
-                            ?.let { pName ->
-                                Person(
-                                    name = pName,
-                                    birthday = personBirthday.ifEmpty { null }
-                                        ?.let { stringToDate(it) },
-                                    height = personHeight.ifEmpty { null }?.toDouble(),
-                                    passportID = personPassportID.ifEmpty { null }
-                                )
-                            }
-                    )
+                            StudyGroup(
+                                id = id.toInt(),
+                                name = name,
+                                coordinates = Coordinates(
+                                    x = coordinatesX.toLong(),
+                                    y = coordinatesY.toDouble()
+                                ),
+                                creationDate = LocalDateTime.parse(creationDate),
+                                studentsCount = studentsCount.ifEmpty { null }?.toLong(),
+                                expelledStudents = expelledStudents.toInt(),
+                                averageMark = averageMark.toLong(),
+                                semesterEnum = semesterEnum.ifEmpty { null }
+                                    ?.let { Semester.valueOf(it) },
+                                groupAdmin = personName.ifEmpty { null }
+                                    ?.let { pName ->
+                                        Person(
+                                            name = pName,
+                                            birthday = personBirthday.ifEmpty { null }
+                                                ?.let { stringToDate(it) },
+                                            height = personHeight.ifEmpty { null }?.toDouble(),
+                                            passportID = personPassportID.ifEmpty { null }
+                                        )
+                                    }
+                            )
+                        }
                 }
-                .peek { StudyGroup.syncIdGenerator(it.id) }
-                .collect(Collectors.toList())
+                    .peek { StudyGroup.syncIdGenerator(it.id) }
+                    .collect(Collectors.toList())
 
             reader.close()
             return collection
@@ -116,5 +117,11 @@ class FileManager(
             console.printLine("Данные в файле не валидны")
         }
         return null
+    }
+
+    override fun readBytes(): ByteArray = File(fileName).readBytes()
+
+    override fun writeBytes(byteArray: ByteArray) {
+        File(fileName).writeBytes(byteArray)
     }
 }

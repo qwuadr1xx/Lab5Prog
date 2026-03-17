@@ -19,6 +19,10 @@ inline fun ensure(condition: Boolean, lazyMessage: () -> String) {
     }
 }
 
+/**
+ * Обертка для валидации данных при значении null
+ * @throws ValidationException
+ */
 @OptIn(ExperimentalContracts::class)
 inline fun <T : Any> ensureNotNull(value: T?, lazyMessage: () -> Any): T {
     contract {

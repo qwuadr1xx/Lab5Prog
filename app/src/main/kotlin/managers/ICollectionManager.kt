@@ -17,15 +17,13 @@ interface ICollectionManager {
 
     fun clear()
 
-    fun saveCollectionToFile()
-
     fun getCollection(): Collection<StudyGroup>
 
     fun insertAt(index: Int, studyGroup: StudyGroup)
 
     fun removeLast()
 
-    fun addIfMax(studyGroup: StudyGroup)
+    fun addIfMax(studyGroup: StudyGroup): Boolean
 
     fun getAverageMarkFromAll(): Long
 

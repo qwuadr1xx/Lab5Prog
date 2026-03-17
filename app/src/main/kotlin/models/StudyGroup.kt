@@ -20,7 +20,6 @@ data class StudyGroup(
     val groupAdmin: Person? = null  //Поле может быть null
 ) : Comparable<StudyGroup> {
 
-
     init {
         ensure(id > 0) { "id должен быть > 0" }
         ensure(name.isNotBlank()) { "Name должно быть не пустым" }
@@ -39,7 +38,7 @@ data class StudyGroup(
     }
 
     companion object {
-        private val seq = AtomicInteger(0)
+        val seq = AtomicInteger(0)
 
         /**
          * Метод для генерации уникального id среди любого экземпляра StudyGroup
@@ -53,6 +52,20 @@ data class StudyGroup(
          */
         fun syncIdGenerator(maxExistingId: Int) {
             seq.updateAndGet { cur -> maxOf(cur, maxExistingId) }
+        }
+
+        /**
+         * Метод, для декрементации id
+         */
+        fun decrementId() {
+            seq.decrementAndGet()
+        }
+
+        /**
+         * Метод, для инкрементации id
+         */
+        fun incrementId() {
+            seq.incrementAndGet()
         }
     }
 }

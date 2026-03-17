@@ -15,12 +15,7 @@ class CollectionManager(
     private val console: IConsole,
     override var lastInitTime: LocalDateTime = LocalDateTime.now(),
     override var lastEditTime: LocalDateTime = LocalDateTime.now(),
-    private val fileManager: IFileManager
 ) : ICollectionManager {
-
-    init {
-        collection.addAll(fileManager.readCollection() ?: emptyList())
-    }
 
     /**
      * Метод, отвечающий за добавление элемента в коллекцию
@@ -75,15 +70,6 @@ class CollectionManager(
         console.printLine("Коллекция успешно очищена")
     }
 
-    /**
-     * Метод, отвечающий за запись коллекции в файл
-     */
-    override fun saveCollectionToFile() {
-        fileManager.writeCollection(collection)
-
-        console.printLine("Коллекция успешно записана в файл")
-    }
-
     override fun getCollection(): Collection<StudyGroup> = collection
 
     /**
@@ -112,14 +98,16 @@ class CollectionManager(
      * Метод, отвечающий за добавление элемента если его значение превышает значение наибольшего в коллекции
      * @param studyGroup
      */
-    override fun addIfMax(studyGroup: StudyGroup) {
+    override fun addIfMax(studyGroup: StudyGroup): Boolean {
         val isMax = collection.stream().noneMatch { it >= studyGroup }
 
         if (isMax) {
             collection.add(studyGroup)
             console.printLine("Элемент успешно добавлен в коллекцию")
+            return true
         } else {
             console.printLine("Элемент не был добавлен, так как не превышает значение наибольшего в коллекции")
+            return false
         }
     }
 

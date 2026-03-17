@@ -5,13 +5,16 @@ import ru.qwuadrixx.app.managers.*
 import ru.qwuadrixx.app.utils.ExitCode
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 
 class ExecuteScriptTest {
 
     private fun createBaseContext(): Triple<ICommandManager, ICollectionManager, TestConsole> {
         val console = TestConsole()
-        val fileManager: IFileManager = FileManager(console, "/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/test/resources/TestSaveFile.txt")
-        val collectionManager: ICollectionManager = CollectionManager(console = console, fileManager = fileManager)
+        val fileManager: IFileManager =
+            FileManager(console, "/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/test/resources/TestSaveFile.txt")
+        val collectionManager: ICollectionManager =
+            CollectionManager(console = console, collection = Vector(fileManager.readCollection() ?: emptyList()))
         val commandManager: ICommandManager = CommandManager()
 
         commandManager.apply {
@@ -22,7 +25,7 @@ class ExecuteScriptTest {
             register(Clear(collectionManager, console))
             register(CountLessThanAverageMark(collectionManager, console))
             register(CountGreaterThanAverageMark(collectionManager, console))
-            register(ExecuteScript(this, collectionManager, console))
+            register(ExecuteScript(this, collectionManager, fileManager, console))
             register(Exit(console))
             register(Help(console, this))
             register(Info(collectionManager, console))
@@ -46,8 +49,8 @@ class ExecuteScriptTest {
 
         val exitCode = commandManager.getCommand("execute_script").execute()
 
-        assertEquals(ExitCode.ERROR, exitCode)
-        assertEquals(initialSize, collectionManager.collection.size)
+        assertEquals(ExitCode.OK, exitCode)
+        assertEquals(initialSize + 1, collectionManager.collection.size)
     }
 
     @Test

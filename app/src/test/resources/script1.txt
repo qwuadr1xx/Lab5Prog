@@ -5,7 +5,7 @@ Group1
 10
 1
 5
-FIRST
+THIRD
 0
 
 show

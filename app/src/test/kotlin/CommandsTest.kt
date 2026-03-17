@@ -8,6 +8,7 @@ import ru.qwuadrixx.app.models.StudyGroup
 import ru.qwuadrixx.app.utils.ExitCode
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 
 
 internal class CommandsTest {
@@ -19,7 +20,8 @@ internal class CommandsTest {
     fun setUp() {
         console = TestConsole()
         val fileManager: IFileManager = FileManager(console, "/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/test/resources/TestSaveFile.txt")
-        collectionManager = CollectionManager(console = console, fileManager = fileManager)
+        collectionManager = CollectionManager(console = console,
+            collection = Vector(fileManager.readCollection() ?: emptyList()))
         commandManager = CommandManager()
 
         commandManager.apply {

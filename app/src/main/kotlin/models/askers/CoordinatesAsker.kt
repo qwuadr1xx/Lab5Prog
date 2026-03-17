@@ -42,7 +42,7 @@ class CoordinatesAsker(private val console: IConsole) : Asker<Coordinates> {
     }
 
     private fun askY(): Double {
-        console.printLine("Пожалуйста, введите координату Y:")
+        console.printLine("Пожалуйста, введите координату Y(максимальное значение 572):")
         while (true) {
             try {
                 val line = console.readLine()
