@@ -38,7 +38,7 @@ data class StudyGroup(
     }
 
     companion object {
-        val seq = AtomicInteger(0)
+        private val seq = AtomicInteger(0)
 
         /**
          * Метод для генерации уникального id среди любого экземпляра StudyGroup

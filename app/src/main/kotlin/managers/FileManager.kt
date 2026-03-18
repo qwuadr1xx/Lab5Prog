@@ -52,8 +52,6 @@ class FileManager(
      */
     override fun readCollection(): Collection<StudyGroup>? {
         try {
-            val reader = InputStreamReader(FileInputStream(fileName), StandardCharsets.UTF_8)
-
             val collection =
                 InputStreamReader(FileInputStream(fileName), StandardCharsets.UTF_8).use { inputStreamReader ->
                     inputStreamReader.readLines().stream()
@@ -104,7 +102,6 @@ class FileManager(
                     .peek { StudyGroup.syncIdGenerator(it.id) }
                     .collect(Collectors.toList())
 
-            reader.close()
             return collection
         } catch (e: FileNotFoundException) {
             console.printError(e)
