@@ -1,4 +1,4 @@
-import ru.qwuadrixx.app.utils.IConsole
+import ru.qwuadrixx.app.console.IConsole
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream

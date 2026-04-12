@@ -1,6 +1,6 @@
-package ru.qwuadrixx.app.utils
+package utils
 
-import ru.qwuadrixx.app.exception.ValidationException
+import exception.ValidationException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

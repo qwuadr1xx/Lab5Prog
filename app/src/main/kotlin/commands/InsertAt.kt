@@ -1,11 +1,11 @@
 package ru.qwuadrixx.app.commands
 
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.models.StudyGroup
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
+import utils.ExitCode
+import utils.ensure
 
 /**
  * Команда insert_at
@@ -55,4 +55,10 @@ class InsertAt(private val collectionManager: ICollectionManager, private val co
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = InsertAt(collectionManager, console)
 }

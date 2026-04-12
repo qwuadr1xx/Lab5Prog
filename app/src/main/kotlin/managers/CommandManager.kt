@@ -1,7 +1,7 @@
 package ru.qwuadrixx.app.managers
 
 import ru.qwuadrixx.app.commands.Command
-import ru.qwuadrixx.app.exception.CommandNotFoundException
+import exception.CommandNotFoundException
 import ru.qwuadrixx.app.utils.PrettyMap
 import kotlin.collections.ArrayDeque
 
@@ -27,7 +27,7 @@ class CommandManager(
      * @return Command
      */
     override fun getCommand(command: String): Command =
-        commands.getOrElse(command) { throw CommandNotFoundException("Команда $command не найдена") }
+        commands.getOrElse(command) { throw CommandNotFoundException("Команда $command не найдена") }.deepCopy()
 
     /**
      * Метод, отвечающий за добавление команды в историю

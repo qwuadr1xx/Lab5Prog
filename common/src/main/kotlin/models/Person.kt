@@ -1,7 +1,8 @@
-package ru.qwuadrixx.app.models
+package models
 
-import ru.qwuadrixx.app.utils.ensure
-import java.util.Date
+import utils.ensure
+import java.io.Serializable
+import java.util.*
 
 /**
  * Дата-класс Person
@@ -12,7 +13,7 @@ data class Person(
     val birthday: Date?, //Поле может быть null
     val height: Double?, //Поле может быть null, Значение поля должно быть больше 0
     val passportID: String? //Длина строки не должна быть больше 48, Строка не может быть пустой, Длина строки должна быть не меньше 7, Поле может быть null
-) {
+) : Serializable {
     init {
         ensure(name.isNotBlank()) { "Name должно быть не пустым" }
         ensure(height == null || height > 0) { "Height должен быть > 0" }

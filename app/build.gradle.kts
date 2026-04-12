@@ -16,6 +16,7 @@ application {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation(project(":common"))
 }
 
 tasks.register<Jar>("fatJar") {

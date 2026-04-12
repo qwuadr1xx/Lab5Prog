@@ -1,13 +1,14 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.exception.ScriptErrorException
-import ru.qwuadrixx.app.exception.ScriptRecursionException
+import exception.ScriptErrorException
+import exception.ScriptRecursionException
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.managers.ICommandManager
 import ru.qwuadrixx.app.managers.IFileManager
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
+import java.io.File
 import java.io.FileNotFoundException
 
 /**
@@ -41,49 +42,51 @@ class ExecuteScript(
                 console.printLine("Имя файла не может быть пустым.")
                 console.printLine("Попробуйте снова:")
             } else break
-
-
         }
 
         val prevReader = console.reader
-        val snapshotCollection = collectionManager.loadSnapshot()
-
-        if (activeScripts.size == 0) prepare()
+        if (activeScripts.isEmpty()) prepare()
 
         try {
-            if (activeScripts.contains(fileName)) throw ScriptRecursionException(
-                "Появляется рекурсия, при повторении $fileName"
-            )
+            if (!File(fileName).exists()) throw FileNotFoundException("Файл $fileName не найден")
 
-            activeScripts.add(fileName)
+            if (!activeScripts.add(fileName)) throw ScriptRecursionException("Рекурсия с файлом $fileName")
 
             console.setFileMode(fileName)
 
-            do {
-                var line = console.readLine()
-                line = line.trim()
-                if (line.isNotEmpty()) {
-                    if (commandManager.getCommand(line).execute() == ExitCode.ERROR) return ExitCode.ERROR
-                    if (line == "save") fileChanged = true
+            while (true) {
+                val raw = console.reader.readLine() ?: break
+                val line = raw.trim()
+                if (line.isEmpty()) continue
+
+                val exitCode = commandManager.getCommand(line).execute()
+                if (exitCode == ExitCode.ERROR) {
+                    throw ScriptErrorException("Ошибка при выполнении команды '$line' в скрипте '$fileName'")
                 }
-            } while (line.isNotEmpty())
+                if (exitCode == ExitCode.EXIT) return ExitCode.EXIT
+                if (line == "save") fileChanged = true
+            }
 
             return ExitCode.OK
         } catch (e: ScriptErrorException) {
-            console.printError(e, e.cause?.message ?: "")
-            collectionManager.saveSnapshot(snapshotCollection)
+            console.printError(e, e.message ?: "")
+            snapshot?.let { collectionManager.saveSnapshot(it) }
         } catch (e: FileNotFoundException) {
             console.printError(e)
-            collectionManager.saveSnapshot(snapshotCollection)
+            snapshot?.let { collectionManager.saveSnapshot(it) }
         } catch (e: SecurityException) {
             console.printError(e)
             console.printLine("Недостаточно прав для чтения из файла '$fileName'.")
-            collectionManager.saveSnapshot(snapshotCollection)
+            snapshot?.let { collectionManager.saveSnapshot(it) }
         } catch (e: ScriptRecursionException) {
             console.printError(e)
-            collectionManager.saveSnapshot(snapshotCollection)
+            snapshot?.let { collectionManager.saveSnapshot(it) }
+        } catch (e: Exception) {
+            console.printError(e)
+            snapshot?.let { collectionManager.saveSnapshot(it) }
         } finally {
-            if (console.reader != prevReader) console.reader.close()
+            if (console.fileMode) console.reader.close()
+
             activeScripts.remove(fileName)
 
             if (activeScripts.isEmpty()) {
@@ -104,7 +107,7 @@ class ExecuteScript(
         try {
             collectionManager.saveSnapshot(snapshot!!)
 
-            if (fileChanged) fileManager.writeBytes(byteArray!!)
+            if (fileChanged && byteArray != null) fileManager.writeBytes(byteArray!!)
 
             return ExitCode.OK
         } catch (e: Exception) {
@@ -112,6 +115,12 @@ class ExecuteScript(
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = ExecuteScript(commandManager, collectionManager, fileManager, console)
 
     private fun prepare() {
         snapshot = collectionManager.loadSnapshot()

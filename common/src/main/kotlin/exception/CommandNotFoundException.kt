@@ -1,4 +1,4 @@
-package ru.qwuadrixx.app.exception
+package exception
 
 /**
  * Исключение ненахождении команды

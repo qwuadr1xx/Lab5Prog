@@ -1,12 +1,12 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.exception.NotFoundException
+import exception.NotFoundException
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.models.StudyGroup
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
+import utils.ExitCode
+import utils.ensure
 
 /**
  * Команда update
@@ -60,4 +60,10 @@ class Update(private val collectionManager: ICollectionManager, private val cons
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Update(collectionManager, console)
 }

@@ -1,8 +1,8 @@
 package ru.qwuadrixx.app.commands
 
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда average_of_average_mark
@@ -35,4 +35,10 @@ class AverageOfAverageMark(private val collectionManager: ICollectionManager, pr
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.OK
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = AverageOfAverageMark(collectionManager, console)
 }

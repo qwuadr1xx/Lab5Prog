@@ -1,9 +1,9 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.managers.IFileManager
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import ru.qwuadrixx.app.managers.IFileManager
+import utils.ExitCode
 import java.io.FileNotFoundException
 
 /**
@@ -53,4 +53,10 @@ class Save(
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Save(collectionManager, fileManager, console)
 }

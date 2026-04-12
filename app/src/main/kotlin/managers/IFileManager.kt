@@ -1,7 +1,7 @@
 package ru.qwuadrixx.app.managers
 
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.IConsole
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 
 interface IFileManager {
     val console: IConsole

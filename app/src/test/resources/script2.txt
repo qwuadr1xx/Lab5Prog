@@ -5,8 +5,5 @@ Group2
 20
 2
 10
-SECOND
+THIRD
 0
-
-show
-

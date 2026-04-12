@@ -27,9 +27,3 @@ class CollectionInfo(
                 "последнее время изменения: $lastEditTime, размер коллекции: $size"
     }
 }
-
-enum class ExitCode {
-    OK,
-    ERROR,
-    EXIT
-}

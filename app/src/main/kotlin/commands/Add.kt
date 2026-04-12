@@ -1,10 +1,10 @@
 package ru.qwuadrixx.app.commands
 
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.models.StudyGroup
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда add
@@ -13,6 +13,7 @@ import ru.qwuadrixx.app.utils.IConsole
 class Add(private val collectionManager: ICollectionManager, private val console: IConsole) :
     Command(name = "add", description = "Добавить новый элемент в коллекцию") {
     private var id: Int? = null
+
 
     /**
      * Метод исполнения команды
@@ -48,4 +49,10 @@ class Add(private val collectionManager: ICollectionManager, private val console
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Add(collectionManager, console)
 }

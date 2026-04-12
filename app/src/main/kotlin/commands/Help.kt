@@ -1,8 +1,8 @@
 package ru.qwuadrixx.app.commands
 
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICommandManager
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда help
@@ -33,4 +33,10 @@ class Help(
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.OK
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Help(console, commandManager)
 }

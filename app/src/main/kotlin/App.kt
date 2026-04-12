@@ -1,11 +1,11 @@
 package ru.qwuadrixx.app
 
 import ru.qwuadrixx.app.commands.*
-import ru.qwuadrixx.app.exception.CommandNotFoundException
+import exception.CommandNotFoundException
 import ru.qwuadrixx.app.managers.CollectionManager
 import ru.qwuadrixx.app.managers.CommandManager
 import ru.qwuadrixx.app.managers.FileManager
-import ru.qwuadrixx.app.utils.Console
+import ru.qwuadrixx.app.console.Console
 import ru.qwuadrixx.app.utils.ExitCode
 import java.util.*
 import kotlin.system.exitProcess

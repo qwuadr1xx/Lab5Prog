@@ -1,4 +1,4 @@
-package ru.qwuadrixx.app.utils
+package utils
 
 import java.time.LocalDateTime
 import java.time.ZoneId

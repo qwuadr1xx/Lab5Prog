@@ -1,0 +1,348 @@
+@startuml
+class ru.qwuadrixx.app.utils.PrettyMap {
++ String toString()
+}
+
+class ru.qwuadrixx.app.utils.CollectionInfo {
++ String toString()
+}
+
+enum ru.qwuadrixx.app.utils.ExitCode {
++  OK
++  ERROR
++  EXIT
+}
+
+class ru.qwuadrixx.app.models.askers.StudyGroupAsker {
++ StudyGroup ask()
++ StudyGroup ask(Int)
+- String askName()
+- Coordinates askCoordinates()
+- Long? askStudentsCount()
+- Int askExpelledStudents()
+- Long askAverageMark()
+- Semester? askSemester()
+- Person? askGroupAdmin()
+}
+
+class ru.qwuadrixx.app.exception.ScriptErrorException {
+}
+class ru.qwuadrixx.app.models.askers.SemesterAsker {
++ Semester? ask()
+- Semester? askSemester()
+}
+
+class ru.qwuadrixx.app.exception.UndoException {
+}
+class ru.qwuadrixx.app.commands.RemoveById {
+- StudyGroup? studyGroup
+- Int? index
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+class ru.qwuadrixx.app.managers.FileManager {
++ void writeCollection(Collection<StudyGroup>)
++ Collection<StudyGroup>? readCollection()
++ ByteArray readBytes()
++ void writeBytes(ByteArray)
+}
+
+class ru.qwuadrixx.app.exception.CommandNotFoundException {
+}
+class ru.qwuadrixx.app.models.Coordinates {
+}
+class ru.qwuadrixx.app.models.askers.PersonAsker {
++ Person ask()
+- String askName()
+- Date? askDate()
+- Double? askHeight()
+- String? askPassportID()
+}
+
+class ru.qwuadrixx.app.models.Person {
+}
+class ru.qwuadrixx.app.commands.Undo {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.InsertAt {
+- Int index
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+class ru.qwuadrixx.app.exception.NotFoundException {
+}
+interface ru.qwuadrixx.app.managers.IFileManager {
++ IConsole console
++ String fileName
++ void writeCollection(Collection<StudyGroup>)
++ Collection<StudyGroup>? readCollection()
++ ByteArray readBytes()
++ void writeBytes(ByteArray)
+}
+
+
+enum ru.qwuadrixx.app.models.Semester {
++  THIRD
++  SEVENTH
++  EIGHTH
+}
+
+interface ru.qwuadrixx.app.managers.ICommandManager {
++ MutableMap<String, Command> commands
++ ArrayDeque<Command> history
++ void register(Command)
++ Command getCommand(String)
++ void addToHistory(Command)
+}
+
+
+class ru.qwuadrixx.app.managers.CollectionManager {
++ void add(StudyGroup)
++ void updateById(Int,StudyGroup)
++ void removeById(Int)
++ void clear()
++ Collection<StudyGroup> getCollection()
++ void insertAt(Int,StudyGroup)
++ void removeLast()
++ Boolean addIfMax(StudyGroup)
++ Long getAverageMarkFromAll()
++ Long countAverageMarkLessThen(Long)
++ Long countAverageMarkGreaterThen(Long)
++ void saveSnapshot(Collection<StudyGroup>)
++ Collection<StudyGroup> loadSnapshot()
+}
+
+class ru.qwuadrixx.app.commands.Show {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.utils.Console {
++ String readLine()
++ void printLine(String)
++ void printObject(Any)
++ void printError(Exception)
++ void printError(Exception,String)
++ void setFileMode(String)
++ void setInteractiveMode()
+}
+
+abstract class ru.qwuadrixx.app.commands.Command {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+interface ru.qwuadrixx.app.models.askers.Asker {
++ T ask()
+}
+
+class ru.qwuadrixx.app.commands.CountGreaterThanAverageMark {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.RemoveLast {
+- StudyGroup? studyGroup
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+interface ru.qwuadrixx.app.utils.IConsole {
++ Boolean fileMode
++ BufferedReader reader
++ String readLine()
++ void printLine(String)
++ void printObject(Any)
++ void printError(Exception)
++ void printError(Exception,String)
++ void setFileMode(String)
++ void setInteractiveMode()
+}
+
+
+class ru.qwuadrixx.app.commands.Clear {
+- Collection<StudyGroup>? snapshot
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+interface ru.qwuadrixx.app.managers.ICollectionManager {
++ Vector<StudyGroup> collection
++ LocalDateTime lastInitTime
++ LocalDateTime lastEditTime
++ void add(StudyGroup)
++ void updateById(Int,StudyGroup)
++ void removeById(Int)
++ void clear()
++ Collection<StudyGroup> getCollection()
++ void insertAt(Int,StudyGroup)
++ void removeLast()
++ Boolean addIfMax(StudyGroup)
++ Long getAverageMarkFromAll()
++ Long countAverageMarkLessThen(Long)
++ Long countAverageMarkGreaterThen(Long)
++ void saveSnapshot(Collection<StudyGroup>)
++ Collection<StudyGroup> loadSnapshot()
+}
+
+
+class ru.qwuadrixx.app.commands.CountLessThanAverageMark {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.AddIfMax {
+- Int id
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+class ru.qwuadrixx.app.commands.Help {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.Info {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.exception.ValidationException {
+}
+class ru.qwuadrixx.app.exception.ScriptRecursionException {
+}
+class ru.qwuadrixx.app.models.StudyGroup$Companion {
+-  seq
++ Int nextId()
++ void syncIdGenerator(Int)
++ void decrementId()
++ void incrementId()
+}
+
+
+class ru.qwuadrixx.app.models.StudyGroup {
++ Int compareTo(StudyGroup)
+}
+
+class ru.qwuadrixx.app.commands.Save {
+- ByteArray? byteArray
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+class ru.qwuadrixx.app.managers.CommandManager {
++ void register(Command)
++ Command getCommand(String)
++ void addToHistory(Command)
+}
+
+class ru.qwuadrixx.app.models.askers.CoordinatesAsker {
++ Coordinates ask()
+- Long askX()
+- Double askY()
+}
+
+class ru.qwuadrixx.app.commands.ExecuteScript$Companion {
+-  activeScripts
+}
+
+class ru.qwuadrixx.app.commands.ExecuteScript {
+- Collection<StudyGroup>? snapshot
+- Boolean fileChanged
+- ByteArray? byteArray
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+- void prepare()
+}
+
+
+class ru.qwuadrixx.app.commands.Exit {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.AverageOfAverageMark {
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+class ru.qwuadrixx.app.commands.Add {
+- Int? id
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+class ru.qwuadrixx.app.commands.Update {
+- StudyGroup? studyGroup
+- Int index
++ ExitCode execute()
++ ExitCode undo()
++ Command deepCopy()
+}
+
+
+
+
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.StudyGroupAsker
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.ScriptErrorException
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.SemesterAsker
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.UndoException
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.RemoveById
+ru.qwuadrixx.app.managers.IFileManager <|.. ru.qwuadrixx.app.managers.FileManager
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.CommandNotFoundException
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.PersonAsker
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Undo
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.InsertAt
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.NotFoundException
+ru.qwuadrixx.app.managers.ICollectionManager <|.. ru.qwuadrixx.app.managers.CollectionManager
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Show
+ru.qwuadrixx.app.utils.IConsole <|.. ru.qwuadrixx.app.utils.Console
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.CountGreaterThanAverageMark
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.RemoveLast
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Clear
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.CountLessThanAverageMark
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.AddIfMax
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Help
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Info
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.ValidationException
+ru.qwuadrixx.app.exception.Exception <|-- ru.qwuadrixx.app.exception.ScriptRecursionException
+ru.qwuadrixx.app.models.StudyGroup +.. ru.qwuadrixx.app.models.StudyGroup$Companion
+ru.qwuadrixx.app.models.Comparable <|.. ru.qwuadrixx.app.models.StudyGroup
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Save
+ru.qwuadrixx.app.managers.ICommandManager <|.. ru.qwuadrixx.app.managers.CommandManager
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.CoordinatesAsker
+ru.qwuadrixx.app.commands.ExecuteScript +.. ru.qwuadrixx.app.commands.ExecuteScript$Companion
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.ExecuteScript
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Exit
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.AverageOfAverageMark
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Add
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Update
+@enduml

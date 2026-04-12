@@ -1,8 +1,8 @@
 package ru.qwuadrixx.app.managers
 
-import ru.qwuadrixx.app.exception.NotFoundException
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.IConsole
+import exception.NotFoundException
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import java.time.LocalDateTime
 import java.util.*
 

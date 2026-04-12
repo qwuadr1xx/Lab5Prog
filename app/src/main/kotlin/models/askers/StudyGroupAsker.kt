@@ -1,13 +1,13 @@
 package ru.qwuadrixx.app.models.askers
 
-import ru.qwuadrixx.app.exception.ScriptErrorException
-import ru.qwuadrixx.app.exception.ValidationException
-import ru.qwuadrixx.app.models.Coordinates
-import ru.qwuadrixx.app.models.Person
-import ru.qwuadrixx.app.models.Semester
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
+import exception.ScriptErrorException
+import exception.ValidationException
+import models.Coordinates
+import models.Person
+import models.Semester
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
+import utils.ensure
 
 /**
  * Класс, запрашивающий данные для создания экземпляра класса StudyGroup

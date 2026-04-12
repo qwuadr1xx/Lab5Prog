@@ -1,9 +1,9 @@
 package ru.qwuadrixx.app.commands
 
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда clear
@@ -44,4 +44,10 @@ class Clear(private val collectionManager: ICollectionManager, private val conso
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Clear(collectionManager, console)
 }

@@ -17,5 +17,7 @@ plugins {
 }
 
 include(":app")
+include("common")
 
 rootProject.name = "Lab5Prog"
+include("server")

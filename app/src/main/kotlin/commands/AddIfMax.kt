@@ -1,10 +1,10 @@
 package ru.qwuadrixx.app.commands
 
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.models.StudyGroup
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда add_if_max
@@ -53,4 +53,10 @@ class AddIfMax(private val collectionManager: ICollectionManager, private val co
         }
         return ExitCode.ERROR
     }
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = AddIfMax(collectionManager, console)
 }

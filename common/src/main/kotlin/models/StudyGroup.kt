@@ -1,6 +1,7 @@
-package ru.qwuadrixx.app.models
+package models
 
-import ru.qwuadrixx.app.utils.ensure
+import utils.ensure
+import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -18,7 +19,7 @@ data class StudyGroup(
     val averageMark: Long, //Значение поля должно быть больше 0, Поле не может быть null
     val semesterEnum: Semester? = null, //Поле может быть null
     val groupAdmin: Person? = null  //Поле может быть null
-) : Comparable<StudyGroup> {
+) : Comparable<StudyGroup>, Serializable {
 
     init {
         ensure(id > 0) { "id должен быть > 0" }

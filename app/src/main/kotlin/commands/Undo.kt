@@ -1,10 +1,10 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.exception.UndoException
+import exception.UndoException
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICommandManager
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
+import utils.ExitCode
+import utils.ensure
 
 /**
  * Команда undo
@@ -49,4 +49,10 @@ class Undo(private val commandManager: ICommandManager, private val console: ICo
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.ERROR
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Undo(commandManager, console)
 }

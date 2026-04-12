@@ -1,8 +1,8 @@
 package ru.qwuadrixx.app.models.askers
 
-import ru.qwuadrixx.app.exception.ScriptErrorException
-import ru.qwuadrixx.app.models.Semester
-import ru.qwuadrixx.app.utils.IConsole
+import exception.ScriptErrorException
+import models.Semester
+import ru.qwuadrixx.app.console.IConsole
 
 /**
  * Класс, запрашивающий данные для создания экземпляра класса Semester

@@ -1,6 +1,6 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.utils.ExitCode
+import utils.ExitCode
 
 /**
  * Абстрактный класс-родитель для всех команд
@@ -17,4 +17,10 @@ abstract class Command(val name: String, val description: String) {
      * @return ExitCode
      */
     abstract fun undo(): ExitCode
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    abstract fun deepCopy(): Command
 }

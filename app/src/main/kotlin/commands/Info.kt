@@ -1,9 +1,9 @@
 package ru.qwuadrixx.app.commands
 
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.utils.CollectionInfo
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда info
@@ -35,4 +35,10 @@ class Info(private val collectionManager: ICollectionManager, private val consol
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.OK
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Info(collectionManager, console)
 }

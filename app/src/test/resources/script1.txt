@@ -8,7 +8,6 @@ Group1
 THIRD
 0
 
-show
 execute_script
-script2.txt
+/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/test/resources/script2.txt
 

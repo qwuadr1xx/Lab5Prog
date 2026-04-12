@@ -1,12 +1,12 @@
 package ru.qwuadrixx.app.managers
 
-import ru.qwuadrixx.app.exception.ValidationException
-import ru.qwuadrixx.app.models.Coordinates
-import ru.qwuadrixx.app.models.Person
-import ru.qwuadrixx.app.models.Semester
-import ru.qwuadrixx.app.models.StudyGroup
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.stringToDate
+import exception.ValidationException
+import models.Coordinates
+import models.Person
+import models.Semester
+import models.StudyGroup
+import ru.qwuadrixx.app.console.IConsole
+import utils.stringToDate
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime

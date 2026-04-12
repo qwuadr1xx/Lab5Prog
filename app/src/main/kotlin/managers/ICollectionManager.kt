@@ -1,6 +1,6 @@
 package ru.qwuadrixx.app.managers
 
-import ru.qwuadrixx.app.models.StudyGroup
+import models.StudyGroup
 import java.time.LocalDateTime
 import java.util.*
 

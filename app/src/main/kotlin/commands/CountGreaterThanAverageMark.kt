@@ -1,8 +1,8 @@
 package ru.qwuadrixx.app.commands
 
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import utils.ExitCode
 
 /**
  * Команда count_greater_than_average_mark
@@ -41,4 +41,10 @@ class CountGreaterThanAverageMark(private val collectionManager: ICollectionMana
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.OK
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = CountGreaterThanAverageMark(collectionManager, console)
 }

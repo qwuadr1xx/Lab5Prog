@@ -1,4 +1,4 @@
-package ru.qwuadrixx.app.utils
+package ru.qwuadrixx.app.console
 
 import java.io.BufferedReader
 import java.io.File
@@ -45,11 +45,11 @@ class Console(
      * @param exc
      */
     override fun printError(exc: Exception) {
-        println("Произошла ошибка ${exc.javaClass.simpleName}, сообщение ошибки: ${exc.message}")
+        println("Произошла ошибка! Сообщение ошибки: ${exc.message}")
     }
 
-    override fun printError(exc: Exception, message: String) {
-        println("Произошла ошибка ${exc.javaClass.simpleName}, сообщение ошибки: $message")
+    override fun printError(message: String) {
+        println("Произошла ошибка! Сообщение ошибки: $message")
     }
 
     /**

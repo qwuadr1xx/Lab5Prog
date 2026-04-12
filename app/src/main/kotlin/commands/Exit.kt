@@ -1,7 +1,7 @@
 package ru.qwuadrixx.app.commands
 
-import ru.qwuadrixx.app.utils.ExitCode
-import ru.qwuadrixx.app.utils.IConsole
+import ru.qwuadrixx.app.console.IConsole
+import utils.ExitCode
 
 /**
  * Команда exit
@@ -28,4 +28,10 @@ class Exit(private val console: IConsole) :
      * @return ExitCode
      */
     override fun undo(): ExitCode = ExitCode.ERROR
+
+    /**
+     * Метод, создающий полную копию команды
+     * @return Command
+     */
+    override fun deepCopy(): Command = Exit(console)
 }

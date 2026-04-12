@@ -1,4 +1,4 @@
-package ru.qwuadrixx.app.utils
+package ru.qwuadrixx.app.console
 
 import java.io.BufferedReader
 
@@ -14,7 +14,7 @@ interface IConsole {
 
     fun printError(exc: Exception)
 
-    fun printError(exc: Exception, message: String)
+    fun printError(message: String)
 
     fun setFileMode(fileName: String)
 

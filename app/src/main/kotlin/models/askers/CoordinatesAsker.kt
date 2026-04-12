@@ -1,10 +1,10 @@
 package ru.qwuadrixx.app.models.askers
 
-import ru.qwuadrixx.app.exception.ScriptErrorException
-import ru.qwuadrixx.app.exception.ValidationException
-import ru.qwuadrixx.app.models.Coordinates
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
+import models.Coordinates
+import exception.ScriptErrorException
+import exception.ValidationException
+import ru.qwuadrixx.app.console.IConsole
+import utils.ensure
 
 /**
  * Класс, запрашивающий данные для создания экземпляра класса Coordinates

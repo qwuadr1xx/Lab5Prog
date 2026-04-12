@@ -1,13 +1,13 @@
 package ru.qwuadrixx.app.models.askers
 
-import ru.qwuadrixx.app.exception.ScriptErrorException
-import ru.qwuadrixx.app.exception.ValidationException
-import ru.qwuadrixx.app.models.Person
-import ru.qwuadrixx.app.utils.IConsole
-import ru.qwuadrixx.app.utils.ensure
-import ru.qwuadrixx.app.utils.stringToDate
+import exception.ScriptErrorException
+import exception.ValidationException
+import models.Person
+import ru.qwuadrixx.app.console.IConsole
+import utils.ensure
+import utils.stringToDate
 import java.time.format.DateTimeParseException
-import java.util.Date
+import java.util.*
 
 /**
  * Класс, запрашивающий данные для создания экземпляра класса Person
