@@ -1,7 +1,7 @@
 package exception
 
 /**
- * Исключение ненахождении команды
+ * Исключение о ненахождении команды
  * @author qwuadrixx
  */
 class CommandNotFoundException(message: String?) : Exception(message)

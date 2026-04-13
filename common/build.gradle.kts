@@ -1,5 +1,6 @@
 plugins {
-    kotlin("jvm")
+    id("buildsrc.convention.kotlin-jvm")
+    kotlin("plugin.serialization") version "1.9.23"
 }
 
 group = "ru.qwuadrixx"
@@ -11,11 +12,12 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.9.0")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }

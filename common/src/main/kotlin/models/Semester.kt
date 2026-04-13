@@ -1,8 +1,9 @@
 package models
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
-enum class Semester : Serializable {
+@Serializable
+enum class Semester {
     THIRD,
     SEVENTH,
     EIGHTH

@@ -27,3 +27,4 @@ class CollectionInfo(
                 "последнее время изменения: $lastEditTime, размер коллекции: $size"
     }
 }
+

@@ -16,8 +16,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-include(":app")
-include("common")
+include(":app", ":common", ":server")
 
 rootProject.name = "Lab5Prog"
-include("server")

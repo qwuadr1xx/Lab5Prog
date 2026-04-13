@@ -1,8 +1,9 @@
 package utils
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
-enum class CommandName : Serializable {
+@Serializable
+enum class CommandName {
     HELP,
     INFO,
     SHOW,

@@ -3,10 +3,14 @@ plugins {
     // The shared code is located in `buildSrc/src/main/kotlin/kotlin-jvm.gradle.kts`.
     id("buildsrc.convention.kotlin-jvm")
     id("org.jetbrains.dokka-javadoc") version "2.1.0"
+    kotlin("plugin.serialization") version "1.9.23"
 
     // Apply the Application plugin to add support for building an executable JVM application.
     application
 }
+
+group = "ru.qwuadrixx"
+version = "1.0"
 
 application {
     // Define the Fully Qualified Name for the application main class
@@ -16,6 +20,7 @@ application {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.9.0")
     implementation(project(":common"))
 }
 

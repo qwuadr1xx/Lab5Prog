@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 import kotlin.uuid.getUuid
 import kotlin.uuid.putUuid
 
-@OptIn(ExperimentalUuidApi::class)
+@ExperimentalUuidApi
 class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex: Int, val serializedData: ByteArray) {
     fun toByteBuffer(): ByteBuffer = ByteBuffer.allocate(HEADING + serializedData.size).apply {
         put(type)
@@ -14,6 +14,7 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
         putInt(length)
         putInt(chunkIndex)
         put(serializedData)
+        flip()
     }
 
     companion object {
@@ -37,7 +38,7 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
 
         fun FIN(): ByteBuffer = ByteBuffer.allocate(1).put(3.toByte())
 
-        fun isASK(byteBuffer: ByteBuffer): Boolean {
+        fun isACK(byteBuffer: ByteBuffer): Boolean {
             val type = byteBuffer.get()
             return type == 1.toByte()
         }

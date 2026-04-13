@@ -1,19 +1,21 @@
 package models
 
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import utils.ensure
-import java.io.Serializable
 import java.util.*
 
 /**
  * Дата-класс Person
  * @author qwuadrixx
  */
+@Serializable
 data class Person(
     val name: String, //Поле не может быть null, Строка не может быть пустой
-    val birthday: Date?, //Поле может быть null
+    @Contextual val birthday: Date?, //Поле может быть null
     val height: Double?, //Поле может быть null, Значение поля должно быть больше 0
     val passportID: String? //Длина строки не должна быть больше 48, Строка не может быть пустой, Длина строки должна быть не меньше 7, Поле может быть null
-) : Serializable {
+) {
     init {
         ensure(name.isNotBlank()) { "Name должно быть не пустым" }
         ensure(height == null || height > 0) { "Height должен быть > 0" }

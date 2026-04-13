@@ -1,4 +1,5 @@
 package net.requests
 
-class ExecuteScriptRequest {
-}
+import utils.CommandName
+
+class ExecuteScriptRequest(override val commandName: CommandName = CommandName.ADD) : IRequest
