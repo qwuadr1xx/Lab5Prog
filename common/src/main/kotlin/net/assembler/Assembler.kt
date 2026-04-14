@@ -36,5 +36,4 @@ class Assembler(override val map: MutableMap<Uuid, MutableList<RUDPPacket>> = Ha
 
         return result
     }
-
 }

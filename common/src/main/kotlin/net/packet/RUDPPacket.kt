@@ -17,6 +17,14 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
         flip()
     }
 
+    fun toByteArray(): ByteArray = ByteBuffer.allocate(HEADING + serializedData.size).apply {
+        put(type)
+        putUuid(uuid)
+        putInt(length)
+        putInt(chunkIndex)
+        put(serializedData)
+    }.array()
+
     companion object {
         const val HEADING = 25
 
@@ -32,25 +40,50 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
             return RUDPPacket(type, uuid, length, chunkIndex, data)
         }
 
-        fun ACK(): ByteBuffer = ByteBuffer.allocate(1).put(1.toByte())
+        fun fromByteArray(byteArray: ByteArray): RUDPPacket {
+            val buffer = ByteBuffer.wrap(byteArray)
+            val type = buffer.get()
+            val uuid = buffer.getUuid()
+            val length = buffer.getInt()
+            val chunkIndex = buffer.getInt()
 
-        fun PING(): ByteBuffer = ByteBuffer.allocate(1).put(2.toByte())
+            val data = ByteArray(buffer.remaining())
+            buffer.get(data)
 
-        fun FIN(): ByteBuffer = ByteBuffer.allocate(1).put(3.toByte())
+            return RUDPPacket(type, uuid, length, chunkIndex, data)
+        }
 
-        fun isACK(byteBuffer: ByteBuffer): Boolean {
+        fun byteBufferACK(): ByteBuffer = ByteBuffer.allocate(1).put(1.toByte())
+
+        fun byteBufferPING(): ByteBuffer = ByteBuffer.allocate(1).put(2.toByte())
+
+        fun byteBufferFIN(): ByteBuffer = ByteBuffer.allocate(1).put(3.toByte())
+
+        fun byteArrayACK(): ByteArray = byteArrayOf(1)
+
+        fun byteArrayPING(): ByteArray = byteArrayOf(2)
+
+        fun byteArrayFIN(): ByteArray = byteArrayOf(3)
+
+        fun isByteBufferACK(byteBuffer: ByteBuffer): Boolean {
             val type = byteBuffer.get()
             return type == 1.toByte()
         }
 
-        fun isPING(byteBuffer: ByteBuffer): Boolean {
+        fun isByteBufferPING(byteBuffer: ByteBuffer): Boolean {
             val type = byteBuffer.get()
             return type == 2.toByte()
         }
 
-        fun isFIN(byteBuffer: ByteBuffer): Boolean {
+        fun isByteBufferFIN(byteBuffer: ByteBuffer): Boolean {
             val type = byteBuffer.get()
             return type == 3.toByte()
         }
+
+        fun isByteArrayACK(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 1.toByte()
+
+        fun isByteArrayPING(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 2.toByte()
+
+        fun isByteArrayFIN(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 3.toByte()
     }
 }

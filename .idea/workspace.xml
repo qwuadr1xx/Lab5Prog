@@ -9,42 +9,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes">
-      <change afterPath="$PROJECT_DIR$/common/src/main/kotlin/exception/ServerTimeoutException.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/IAssembler.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/kotlin/executors/IRequestExecutor.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/IRequestManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/checkstyle-idea.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/App.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/Client.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/utils/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/common/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/exception/CommandNotFoundException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/exception/CommandNotFoundException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/models/Coordinates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/models/Coordinates.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/models/Person.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/models/Person.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/models/Semester.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/models/Semester.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/models/StudyGroup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/models/StudyGroup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddIfMaxRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddIfMaxRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AverageOfAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AverageOfAverageMarkRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ClearRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ClearRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountGreaterThanAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountGreaterThanAverageMarkRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountLessThanAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountLessThanAverageMarkRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ExecuteScriptRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ExecuteScriptRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/IRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/IRequest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/utils/CommandName.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/utils/CommandName.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/utils/Utils.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/server/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/UDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/UDPServer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/IResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/IResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/UDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

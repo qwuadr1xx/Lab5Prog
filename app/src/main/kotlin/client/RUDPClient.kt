@@ -14,13 +14,15 @@ import java.nio.channels.DatagramChannel
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-class RUDPClient(private var datagramChannel: DatagramChannel, private val assembler: IAssembler) {
+class RUDPClient(private val assembler: IAssembler) {
+    private val datagramChannel: DatagramChannel = DatagramChannel.open()
+
     fun sendAndReceive(request: IRequest): IResponse {
         val listOfPackets = RUDPPacketSplitter(request)
         pingServer()
         sendAndCheck(listOfPackets)
-        val response = receiveAnswer()
-        finishConnection()
+        val response = receiveResponse()
+//        finishConnection()
         return response
     }
 
@@ -29,9 +31,9 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
         for (attempts in 1..MAX_RETRIES) {
             try {
                 byteBuffer.clear()
-                datagramChannel.write(RUDPPacket.PING())
+                datagramChannel.write(RUDPPacket.byteBufferPING())
                 val bytesRead = datagramChannel.read(byteBuffer.flip())
-                if (bytesRead > 0 && RUDPPacket.isACK(byteBuffer)) break
+                if (bytesRead > 0 && RUDPPacket.isByteBufferACK(byteBuffer)) break
             } catch (e: SocketTimeoutException) {
                 if (attempts == MAX_RETRIES) {
                     throw ServerTimeoutException("Сервер не отвечает, попробуйте снова позже")
@@ -48,7 +50,7 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
                     byteBuffer.clear()
                     datagramChannel.write(packet.toByteBuffer())
                     val bytesRead = datagramChannel.read(byteBuffer.flip())
-                    if (bytesRead > 0 && RUDPPacket.isACK(byteBuffer)) break
+                    if (bytesRead > 0 && RUDPPacket.isByteBufferACK(byteBuffer)) break
                 } catch (e: SocketTimeoutException) {
                     if (attempts == MAX_RETRIES) {
                         throw ServerTimeoutException("Сервер не отвечает, попробуйте снова позже")
@@ -58,7 +60,7 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
         }
     }
 
-    private fun receiveAnswer(): IResponse {
+    private fun receiveResponse(): IResponse {
         val byteBuffer = ByteBuffer.allocate(1500)
         while (true) {
             for (attempts in 1..MAX_RETRIES) {
@@ -66,7 +68,7 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
                     byteBuffer.clear()
                     datagramChannel.read(byteBuffer)
                     val packet = RUDPPacket.fromByteBuffer(byteBuffer.flip())
-                    datagramChannel.write(RUDPPacket.ACK())
+                    datagramChannel.write(RUDPPacket.byteBufferACK())
                     assembler.addPacket(packet)
                     if (assembler.isComplete(packet.uuid)) return responseDeserializer(assembler.assemble(packet.uuid))
                     break
@@ -79,22 +81,19 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
         }
     }
 
-    private fun finishConnection() {
-        val byteBuffer = ByteBuffer.allocate(1500)
-        for (attempts in 1..MAX_RETRIES) {
-            try {
-                byteBuffer.clear()
-                datagramChannel.write(RUDPPacket.FIN())
-                val bytesRead = datagramChannel.read(byteBuffer)
-                if (bytesRead > 0 && RUDPPacket.isFIN(byteBuffer)) break
-            } catch (e: SocketTimeoutException) {
-                if (attempts == MAX_RETRIES) {
-                    throw ServerTimeoutException("Сервер не отвечает, попробуйте снова позже")
-                }
-            }
-        }
-    }
-
+//    private fun finishConnection() {
+//        val byteBuffer = ByteBuffer.allocate(1500)
+//        for (attempts in 1..MAX_RETRIES) {
+//            try {
+//                byteBuffer.clear()
+//                datagramChannel.write(RUDPPacket.byteBufferFIN())
+//                val bytesRead = datagramChannel.read(byteBuffer)
+//                if (bytesRead > 0 && RUDPPacket.isByteBufferFIN(byteBuffer)) break
+//            } catch (_: SocketTimeoutException) {
+//
+//            }
+//        }
+//    }
 
     companion object {
         const val SERVER_PORT = 8081
@@ -102,7 +101,6 @@ class RUDPClient(private var datagramChannel: DatagramChannel, private val assem
     }
 
     init {
-        datagramChannel = DatagramChannel.open()
         datagramChannel.connect(InetSocketAddress(SERVER_PORT))
         datagramChannel.socket().soTimeout = 3000
     }
