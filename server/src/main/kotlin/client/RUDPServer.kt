@@ -17,47 +17,33 @@ class RUDPServer(private val assembler: IAssembler) {
 
     fun runner() {
         while (true) {
-            val incomingPacket = DatagramPacket(ByteArray(1500), 1500)
+            try {
+                val incomingPacket = DatagramPacket(ByteArray(1500), 1500)
+                val (address, port) = receivePing(incomingPacket)
+                val request = receiveRequest(address, port)
+                sendResponse(emptyList(), address, port) // TODO: заменить на реальный список пакетов
+            } catch (_: ServerTimeoutException) {
 
-            
+            }
         }
     }
 
-    fun receiveAndResponse(): IRequest {
-        val pair = receivePing()
-        val address = pair.first
-        val port = pair.second
-        val request = receiveRequest(address, port)
-//        sendResponse()
-        TODO()
-    }
-
-    private fun receivePing(): Pair<InetAddress, Int> {
-        val incomingPacket = DatagramPacket(ByteArray(1500), 1500)
+    private fun receivePing(incomingPacket: DatagramPacket): Pair<InetAddress, Int> {
         for (attempts in 1..MAX_RETRIES) {
             try {
                 datagramSocket.receive(incomingPacket)
                 if (incomingPacket.length > 0 && RUDPPacket.isByteArrayPING(incomingPacket.data.copyOf(incomingPacket.length))) {
                     val ack = RUDPPacket.byteArrayACK()
-                    datagramSocket.send(
-                        DatagramPacket(
-                            ack,
-                            ack.size,
-                            incomingPacket.address,
-                            incomingPacket.port
-                        )
-                    )
+                    datagramSocket.send(DatagramPacket(ack, ack.size, incomingPacket.address, incomingPacket.port))
+                    return Pair(incomingPacket.address, incomingPacket.port)
                 } else {
                     throw SocketTimeoutException()
                 }
-                return Pair(incomingPacket.address, incomingPacket.port)
             } catch (e: SocketTimeoutException) {
-                if (attempts == MAX_RETRIES) {
-                    throw ServerTimeoutException("Сервер не отвечает, попробуйте снова позже")
-                }
+                if (attempts == MAX_RETRIES) throw ServerTimeoutException("Сервер не отвечает")
             }
         }
-        throw ServerTimeoutException("Сервер не отвечает, попробуйте снова позже")
+        throw ServerTimeoutException("Сервер не отвечает")
     }
 
     private fun receiveRequest(address: InetAddress, port: Int): IRequest {
@@ -74,8 +60,8 @@ class RUDPServer(private val assembler: IAssembler) {
                             DatagramPacket(
                                 ack,
                                 ack.size,
-                                incomingPacket.address,
-                                incomingPacket.port
+                                address,
+                                port
                             )
                         )
                         assembler.addPacket(packet)

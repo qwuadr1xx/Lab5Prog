@@ -10,11 +10,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/IResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/IResponse.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/UDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +78,8 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.10/7175b5de8ceb04e496bdc45c6fd9e33631737e34/kotlin-stdlib-2.1.10-sources.jar!/jvmMain/kotlin/CharSequence.kt" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.10/7175b5de8ceb04e496bdc45c6fd9e33631737e34/kotlin-stdlib-2.1.10-sources.jar!/jvmMain/kotlin/String.kt" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/Library/Java/JavaVirtualMachines/ms-17.0.16/Contents/Home/lib/src.zip!/java.base/java/net/DatagramPacket.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/Library/Java/JavaVirtualMachines/ms-17.0.16/Contents/Home/lib/src.zip!/java.base/java/net/DatagramSocket.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/Library/Java/JavaVirtualMachines/ms-17.0.16/Contents/Home/lib/src.zip!/java.base/java/util/ArrayList.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProblemsViewState">
@@ -115,7 +113,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "editor.preferences.completion"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
