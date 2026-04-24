@@ -3,15 +3,13 @@ package ru.qwuadrixx.app.managers
 import ru.qwuadrixx.app.commands.Command
 import exception.CommandNotFoundException
 import ru.qwuadrixx.app.utils.PrettyMap
-import kotlin.collections.ArrayDeque
 
 /**
  * Класс, отвечающий за хранение команд и взаимодействия с ними
  * @author qwuadrixx
  */
 class CommandManager(
-    override val commands: MutableMap<String, Command> = PrettyMap(),
-    override val history: ArrayDeque<Command> = ArrayDeque()
+    override val commands: MutableMap<String, Command> = PrettyMap()
 ) : ICommandManager {
     /**
      * Метод, отвечающий за регистрацию команды в словаре
@@ -27,13 +25,5 @@ class CommandManager(
      * @return Command
      */
     override fun getCommand(command: String): Command =
-        commands.getOrElse(command) { throw CommandNotFoundException("Команда $command не найдена") }.deepCopy()
-
-    /**
-     * Метод, отвечающий за добавление команды в историю
-     * @param command
-     */
-    override fun addToHistory(command: Command) {
-        history.addLast(command)
-    }
+        commands.getOrElse(command) { throw CommandNotFoundException("Команда $command не найдена") }
 }

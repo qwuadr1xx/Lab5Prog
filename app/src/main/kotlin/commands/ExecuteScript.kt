@@ -1,12 +1,10 @@
 package ru.qwuadrixx.app.commands
 
-import exception.ScriptErrorException
 import exception.ScriptRecursionException
-import models.StudyGroup
+import net.requests.ExecuteScriptRequest
+import net.responses.CommandResponse
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
-import ru.qwuadrixx.app.managers.ICollectionManager
-import ru.qwuadrixx.app.managers.ICommandManager
-import ru.qwuadrixx.app.managers.IFileManager
 import utils.ExitCode
 import java.io.File
 import java.io.FileNotFoundException
@@ -16,118 +14,80 @@ import java.io.FileNotFoundException
  * @author qwuadrixx
  */
 class ExecuteScript(
-    private val commandManager: ICommandManager,
-    private val collectionManager: ICollectionManager,
-    private val fileManager: IFileManager,
+    private val rudpClient: IRUDPClient,
     private val console: IConsole,
-) :
-    Command(name = "execute_script", description = "Считать и исполнить скрипт из указанного файла.") {
-    private var snapshot: Collection<StudyGroup>? = null
-    private var fileChanged: Boolean = false
-    private var byteArray: ByteArray? = null
+) : Command(name = "execute_script", description = "Считать и исполнить скрипт из указанного файла.") {
 
-    /**
-     * Метод исполнения команды
-     * @return ExitCode
-     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды execute_script")
-
         console.printLine("Введите путь до файла:")
-        var fileName: String
-        while (true) {
-            fileName = console.readLine()
 
-            if (fileName.isEmpty()) {
-                console.printLine("Имя файла не может быть пустым.")
-                console.printLine("Попробуйте снова:")
-            } else break
+        var filePath: String
+        while (true) {
+            filePath = console.readLine()
+            if (filePath.isNotEmpty()) break
+            console.printLine("Имя файла не может быть пустым. Попробуйте снова:")
         }
 
-        val prevReader = console.reader
-        if (activeScripts.isEmpty()) prepare()
-
         try {
-            if (!File(fileName).exists()) throw FileNotFoundException("Файл $fileName не найден")
+            val file = File(filePath)
+            if (!file.exists()) throw FileNotFoundException("Файл $filePath не найден")
+            if (!activeScripts.add(filePath)) throw ScriptRecursionException("Рекурсия с файлом $filePath")
 
-            if (!activeScripts.add(fileName)) throw ScriptRecursionException("Рекурсия с файлом $fileName")
+            val flatLines = expandScriptFile(file)
+            activeScripts.remove(filePath)
 
-            console.setFileMode(fileName)
+            if (flatLines.isEmpty()) return ExitCode.OK
 
-            while (true) {
-                val raw = console.reader.readLine() ?: break
-                val line = raw.trim()
-                if (line.isEmpty()) continue
+            val response = rudpClient.sendAndReceive(ExecuteScriptRequest(flatLines)) as CommandResponse
+            if (response.message.isNotEmpty()) console.printObject(response.message)
+            return response.exitCode
 
-                val exitCode = commandManager.getCommand(line).execute()
-                if (exitCode == ExitCode.ERROR) {
-                    throw ScriptErrorException("Ошибка при выполнении команды '$line' в скрипте '$fileName'")
-                }
-                if (exitCode == ExitCode.EXIT) return ExitCode.EXIT
-                if (line == "save") fileChanged = true
-            }
-
-            return ExitCode.OK
-        } catch (e: ScriptErrorException) {
-            console.printError(e, e.message ?: "")
-            snapshot?.let { collectionManager.saveSnapshot(it) }
-        } catch (e: FileNotFoundException) {
-            console.printError(e)
-            snapshot?.let { collectionManager.saveSnapshot(it) }
-        } catch (e: SecurityException) {
-            console.printError(e)
-            console.printLine("Недостаточно прав для чтения из файла '$fileName'.")
-            snapshot?.let { collectionManager.saveSnapshot(it) }
         } catch (e: ScriptRecursionException) {
             console.printError(e)
-            snapshot?.let { collectionManager.saveSnapshot(it) }
+            activeScripts.remove(filePath)
+        } catch (e: FileNotFoundException) {
+            console.printError(e)
+        } catch (e: SecurityException) {
+            console.printError(e)
+            console.printLine("Недостаточно прав для чтения из файла '$filePath'.")
         } catch (e: Exception) {
             console.printError(e)
-            snapshot?.let { collectionManager.saveSnapshot(it) }
-        } finally {
-            if (console.fileMode) console.reader.close()
+        }
+        return ExitCode.ERROR
+    }
 
-            activeScripts.remove(fileName)
+    private fun expandScriptFile(file: File): List<String> {
+        val rawLines = file.readLines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
 
-            if (activeScripts.isEmpty()) {
-                console.setInteractiveMode()
+        val expandedLines = mutableListOf<String>()
+        var index = 0
+
+        while (index < rawLines.size) {
+            val currentLine = rawLines[index]
+
+            if (currentLine == "execute_script" && index + 1 < rawLines.size) {
+                val nestedFilePath = rawLines[index + 1]
+                index += 2
+
+                val nestedFile = File(nestedFilePath)
+                if (!nestedFile.exists()) throw FileNotFoundException("Вложенный файл скрипта не найден: $nestedFilePath")
+                if (!activeScripts.add(nestedFilePath)) throw ScriptRecursionException("Рекурсия с файлом $nestedFilePath")
+
+                expandedLines.addAll(expandScriptFile(nestedFile))
+                activeScripts.remove(nestedFilePath)
             } else {
-                console.reader = prevReader
+                expandedLines.add(currentLine)
+                index++
             }
         }
-        return ExitCode.ERROR
-    }
 
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode {
-        console.printLine("Отмена команды execute_script")
-        try {
-            collectionManager.saveSnapshot(snapshot!!)
-
-            if (fileChanged && byteArray != null) fileManager.writeBytes(byteArray!!)
-
-            return ExitCode.OK
-        } catch (e: Exception) {
-            console.printError(e)
-        }
-        return ExitCode.ERROR
-    }
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = ExecuteScript(commandManager, collectionManager, fileManager, console)
-
-    private fun prepare() {
-        snapshot = collectionManager.loadSnapshot()
-        byteArray = fileManager.readBytes()
+        return expandedLines
     }
 
     companion object {
-        private val activeScripts = HashSet<String>()
+        val activeScripts: MutableSet<String> = HashSet()
     }
 }

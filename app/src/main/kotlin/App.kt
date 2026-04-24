@@ -1,47 +1,67 @@
 package ru.qwuadrixx.app
 
+import com.charleskorn.kaml.Yaml
 import exception.CommandNotFoundException
+import kotlinx.serialization.Serializable
+import net.assembler.Assembler
+import org.slf4j.LoggerFactory
+import ru.qwuadrixx.app.client.RUDPClient
 import ru.qwuadrixx.app.commands.*
 import ru.qwuadrixx.app.console.Console
-import ru.qwuadrixx.app.managers.CollectionManager
 import ru.qwuadrixx.app.managers.CommandManager
-import ru.qwuadrixx.app.managers.FileManager
 import utils.ExitCode
-import java.util.*
 import kotlin.system.exitProcess
+
+private val logger = LoggerFactory.getLogger("App")
+
+@Serializable
+private data class ClientConfig(
+    val serverHost: String = "localhost",
+    val serverPort: Int = 8081,
+    val maxRetries: Int = 3,
+    val socketTimeoutMs: Int = 3000
+)
+
+private fun loadConfig(): ClientConfig {
+    val stream = object {}.javaClass.getResourceAsStream("/client.yml")
+        ?: return ClientConfig().also { logger.warn("client.yml не найден, используются значения по умолчанию") }
+    return try {
+        Yaml.default.decodeFromString(ClientConfig.serializer(), stream.bufferedReader().readText())
+            .also { logger.info("Конфигурация клиента: host={}, port={}", it.serverHost, it.serverPort) }
+    } catch (e: Exception) {
+        logger.error("Ошибка загрузки client.yml: {}", e.message)
+        ClientConfig()
+    }
+}
 
 /**
  * Метод входа в программу
  * @author qwuadrixx
  */
+@kotlin.uuid.ExperimentalUuidApi
 fun main() {
-    //Самому задать переменную окружения
-    val fileName = System.getenv("SAVE_FILE_NAME")
-    println(fileName)
+    val config = loadConfig()
     val console = Console()
+    val rudpClient = RUDPClient(Assembler(), config.serverHost, config.serverPort, config.maxRetries, config.socketTimeoutMs)
     val commandManager = CommandManager()
-    val fileManager = FileManager(console = console, fileName = fileName)
-    val collectionManager =
-        CollectionManager(console = console, collection = Vector(fileManager.readCollection() ?: emptyList()))
 
     commandManager.apply {
-        register(Add(collectionManager, console))
-        register(AddIfMax(collectionManager, console))
-        register(Show(collectionManager, console))
-        register(AverageOfAverageMark(collectionManager, console))
-        register(Clear(collectionManager, console))
-        register(CountLessThanAverageMark(collectionManager, console))
-        register(CountGreaterThanAverageMark(collectionManager, console))
-        register(ExecuteScript(this, collectionManager, fileManager, console))
+        register(Add(rudpClient, console))
+        register(AddIfMax(rudpClient, console))
+        register(Show(rudpClient, console))
+        register(AverageOfAverageMark(rudpClient, console))
+        register(Clear(rudpClient, console))
+        register(CountLessThanAverageMark(rudpClient, console))
+        register(CountGreaterThanAverageMark(rudpClient, console))
+        register(ExecuteScript(rudpClient, console))
         register(Exit(console))
-        register(Help(console, this))
-        register(Info(collectionManager, console))
-        register(InsertAt(collectionManager, console))
-        register(RemoveById(collectionManager, console))
-        register(RemoveLast(collectionManager, console))
-        register(Save(collectionManager, fileManager, console))
-        register(Update(collectionManager, console))
-        register(Undo(this, console))
+        register(Help(console, commandManager))
+        register(Info(rudpClient, console))
+        register(InsertAt(rudpClient, console))
+        register(RemoveById(rudpClient, console))
+        register(RemoveLast(rudpClient, console))
+        register(Update(rudpClient, console))
+        register(Undo(rudpClient, console))
     }
 
     while (true) {
@@ -53,11 +73,8 @@ fun main() {
 
             when (exitCode) {
                 ExitCode.EXIT -> exitProcess(0)
-                ExitCode.ERROR -> println("Команда ${command.name} не выполнена")
-                ExitCode.OK -> {
-                    if (commandName != "undo") commandManager.addToHistory(command)
-                    println("Команда ${command.name} выполнена успешно")
-                }
+                ExitCode.ERROR -> console.printLine("Команда ${command.name} не выполнена")
+                ExitCode.OK -> console.printLine("Команда ${command.name} выполнена успешно")
             }
         } catch (e: CommandNotFoundException) {
             console.printError(e)

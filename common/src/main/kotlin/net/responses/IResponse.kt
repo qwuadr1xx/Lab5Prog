@@ -1,7 +1,9 @@
 package net.responses
 
+import kotlinx.serialization.Serializable
 import utils.ExitCode
 
-interface IResponse {
+@Serializable
+sealed interface IResponse {
     val exitCode: ExitCode
 }

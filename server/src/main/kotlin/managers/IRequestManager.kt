@@ -1,7 +1,8 @@
 package ru.qwuadrixx.managers
 
-import utils.CommandName
+import net.requests.IRequest
+import net.responses.IResponse
 
 interface IRequestManager {
-    val requests: MutableMap<CommandName, >
+    fun dispatch(request: IRequest): IResponse
 }

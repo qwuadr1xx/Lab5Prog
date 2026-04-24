@@ -9,7 +9,7 @@ import ru.qwuadrixx.app.console.IConsole
 import utils.stringToDate
 import java.io.*
 import java.nio.charset.StandardCharsets
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 import java.util.stream.Collectors
 
 /**
@@ -99,7 +99,6 @@ class FileManager(
                             )
                         }
                 }
-                    .peek { StudyGroup.syncIdGenerator(it.id) }
                     .collect(Collectors.toList())
 
             return collection

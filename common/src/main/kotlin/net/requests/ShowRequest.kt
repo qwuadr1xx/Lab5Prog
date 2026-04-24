@@ -1,4 +1,7 @@
 package net.requests
 
-class ShowRequest {
-}
+import kotlinx.serialization.Serializable
+import utils.CommandName
+
+@Serializable
+class ShowRequest(override val commandName: CommandName = CommandName.SHOW) : IRequest

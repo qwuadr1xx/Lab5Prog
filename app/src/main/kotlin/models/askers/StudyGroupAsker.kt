@@ -92,10 +92,15 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
         console.printLine("Пожалуйста, введите число(положительное) исключенных студентов:")
         while (true) {
             try {
-                val expelledStudents = console.readLine().toInt()
-
+                val line = console.readLine()
+                if (line.isEmpty()) {
+                    if (console.fileMode) throw ScriptErrorException("Поле обязательно для заполнения")
+                    console.printError("Поле обязательно для заполнения")
+                    console.printLine("Попробуйте снова:")
+                    continue
+                }
+                val expelledStudents = line.toInt()
                 ensure(expelledStudents > 0) { "ExpelledStudents должен быть > 0" }
-
                 return expelledStudents
             } catch (e: ValidationException) {
                 if (console.fileMode) throw ScriptErrorException(e.message)
@@ -103,7 +108,7 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
                 if (console.fileMode) throw ScriptErrorException(e.message)
-                console.printError(e)
+                console.printError("Введите целое число > 0")
                 console.printLine("Попробуйте снова:")
             }
         }
@@ -113,10 +118,15 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
         console.printLine("Пожалуйста, введите среднюю оценку(положительную) студентов:")
         while (true) {
             try {
-                val averageMark = console.readLine().toLong()
-
+                val line = console.readLine()
+                if (line.isEmpty()) {
+                    if (console.fileMode) throw ScriptErrorException("Поле обязательно для заполнения")
+                    console.printError("Поле обязательно для заполнения")
+                    console.printLine("Попробуйте снова:")
+                    continue
+                }
+                val averageMark = line.toLong()
                 ensure(averageMark > 0) { "AverageMark должен быть > 0" }
-
                 return averageMark
             } catch (e: ValidationException) {
                 if (console.fileMode) throw ScriptErrorException(e.message)
@@ -124,7 +134,7 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
                 console.printLine("Попробуйте снова:")
             } catch (e: NumberFormatException) {
                 if (console.fileMode) throw ScriptErrorException(e.message)
-                console.printError(e)
+                console.printError("Введите целое число > 0")
                 console.printLine("Попробуйте снова:")
             }
         }

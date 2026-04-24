@@ -28,15 +28,4 @@ class Help(
         return ExitCode.ERROR
     }
 
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode = ExitCode.OK
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = Help(console, commandManager)
 }

@@ -1,0 +1,4 @@
+serverHost: localhost
+serverPort: 9090
+maxRetries: 3
+socketTimeoutMs: 9000

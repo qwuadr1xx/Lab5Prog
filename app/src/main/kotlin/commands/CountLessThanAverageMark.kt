@@ -1,50 +1,39 @@
 package ru.qwuadrixx.app.commands
 
+import net.requests.CountLessThanAverageMarkRequest
+import net.responses.CommandResponse
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
-import ru.qwuadrixx.app.managers.ICollectionManager
 import utils.ExitCode
 
 /**
  * Команда count_less_than_average_mark
  * @author qwuadrixx
  */
-class CountLessThanAverageMark(private val collectionManager: ICollectionManager, private val console: IConsole) :
+class CountLessThanAverageMark(private val rudpClient: IRUDPClient, private val console: IConsole) :
     Command(
         name = "count_less_than_average_mark",
         description = "Вывести количество элементов, значение поля averageMark которых меньше заданного"
     ) {
-    /**
-     * Метод исполнения команды
-     * @return ExitCode
-     */
+
     override fun execute(): ExitCode {
         console.printLine("Использование команды count_less_than_average_mark")
-
         while (true) {
             try {
                 console.printLine("Введите среднюю оценку:")
                 val averageMark = console.readLine().toLong()
-
-                val count = collectionManager.countAverageMarkLessThen(averageMark)
-                console.printObject(count)
-
-                return ExitCode.OK
+                val response = rudpClient.sendAndReceive(
+                    CountLessThanAverageMarkRequest(averageMark)
+                ) as CommandResponse
+                if (response.message.isNotEmpty()) console.printObject(response.message)
+                return response.exitCode
             } catch (e: NumberFormatException) {
                 console.printError(e)
                 console.printLine("Введите корректное число")
+            } catch (e: Exception) {
+                console.printError(e)
+                return ExitCode.ERROR
             }
         }
     }
-
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode = ExitCode.OK
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = CountLessThanAverageMark(collectionManager, console)
 }

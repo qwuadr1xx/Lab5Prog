@@ -1,5 +1,10 @@
 package net.requests
 
+import kotlinx.serialization.Serializable
 import utils.CommandName
 
-class ExecuteScriptRequest(override val commandName: CommandName = CommandName.ADD) : IRequest
+@Serializable
+class ExecuteScriptRequest(
+    val lines: List<String>,
+    override val commandName: CommandName = CommandName.EXECUTE_SCRIPT
+) : IRequest

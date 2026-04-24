@@ -1,8 +1,9 @@
 package ru.qwuadrixx.app.commands
 
-import exception.UndoException
+import net.requests.UndoRequest
+import net.responses.CommandResponse
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
-import ru.qwuadrixx.app.managers.ICommandManager
 import utils.ExitCode
 import utils.ensure
 
@@ -10,49 +11,23 @@ import utils.ensure
  * Команда undo
  * @author qwuadrixx
  */
-class Undo(private val commandManager: ICommandManager, private val console: IConsole) :
+class Undo(private val rudpClient: IRUDPClient, private val console: IConsole) :
     Command(name = "undo", description = "Отмена последних n команд") {
-    /**
-     * Метод исполнения команды
-     * @return ExitCode
-     */
+
     override fun execute(): ExitCode {
         console.printLine("Использование команды undo")
         while (true) {
             try {
                 console.printLine("Введите количество отмененных команд(больше 0):")
-                var n = console.readLine().toInt()
+                val n = console.readLine().toInt()
                 ensure(n > 0) { "Значение количества отмененных команд должно быть больше 0" }
-                if (n > commandManager.history.size) n = commandManager.history.size
-                repeat(n) {
-                    val command = commandManager.history.removeLast()
-                    if (command.undo() == ExitCode.ERROR) throw UndoException("Ошибка с отменой команды ${command.name}")
-                }
-
-                return ExitCode.OK
-            } catch (e: UndoException) {
-                console.printError(e)
-                return ExitCode.ERROR
-            } catch (e: NoSuchElementException) {
-                console.printError(e)
-                console.printLine("В истории команд не осталось элементов")
-                return ExitCode.ERROR
+                val response = rudpClient.sendAndReceive(UndoRequest(n)) as CommandResponse
+                if (response.message.isNotEmpty()) console.printObject(response.message)
+                return response.exitCode
             } catch (e: Exception) {
                 console.printError(e)
-                return ExitCode.ERROR
+                console.printLine("Попробуйте снова:")
             }
         }
     }
-
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode = ExitCode.ERROR
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = Undo(commandManager, console)
 }

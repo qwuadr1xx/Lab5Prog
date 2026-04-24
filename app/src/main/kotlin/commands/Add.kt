@@ -1,8 +1,9 @@
 package ru.qwuadrixx.app.commands
 
-import models.StudyGroup
+import net.requests.AddRequest
+import net.responses.CommandResponse
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
-import ru.qwuadrixx.app.managers.ICollectionManager
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
 import utils.ExitCode
 
@@ -10,49 +11,19 @@ import utils.ExitCode
  * Команда add
  * @author qwuadrixx
  */
-class Add(private val collectionManager: ICollectionManager, private val console: IConsole) :
+class Add(private val rudpClient: IRUDPClient, private val console: IConsole) :
     Command(name = "add", description = "Добавить новый элемент в коллекцию") {
-    private var id: Int? = null
 
-
-    /**
-     * Метод исполнения команды
-     * @return ExitCode
-     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды add")
         try {
             val studyGroup = StudyGroupAsker(console).ask()
-            this.id = studyGroup.id
-            collectionManager.add(studyGroup)
-
-            return ExitCode.OK
+            val response = rudpClient.sendAndReceive(AddRequest(studyGroup)) as CommandResponse
+            if (response.message.isNotEmpty()) console.printObject(response.message)
+            return response.exitCode
         } catch (e: Exception) {
             console.printError(e)
         }
         return ExitCode.ERROR
     }
-
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode {
-        console.printLine("Отмена команды add")
-        try {
-            val index = collectionManager.collection.indexOfFirst { it.id == id }
-            collectionManager.collection.removeAt(index)
-            StudyGroup.decrementId()
-            return ExitCode.OK
-        } catch (e: Exception) {
-            console.printError(e)
-        }
-        return ExitCode.ERROR
-    }
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = Add(collectionManager, console)
 }

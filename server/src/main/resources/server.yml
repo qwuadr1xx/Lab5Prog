@@ -1,0 +1,3 @@
+port: 9090
+maxRetries: 3
+socketTimeoutMs: 3000

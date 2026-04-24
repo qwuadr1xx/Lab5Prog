@@ -26,7 +26,7 @@ class TestConsole(
 
     }
 
-    override fun printError(exc: Exception, message: String) {
+    override fun printError(message: String) {
 
     }
 

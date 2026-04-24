@@ -1,9 +1,9 @@
 package net.requests
 
-import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import utils.CommandName
 
-interface IRequest {
-    @Contextual
+@Serializable
+sealed interface IRequest {
     val commandName: CommandName
 }

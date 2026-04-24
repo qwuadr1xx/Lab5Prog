@@ -9,29 +9,8 @@ import utils.ExitCode
  */
 class Exit(private val console: IConsole) :
     Command(name = "exit", description = "Завершить программу (без сохранения в файл)") {
-    /**
-     * Метод исполнения команды
-     * @return ExitCode
-     */
     override fun execute(): ExitCode {
         console.printLine("Использование команды exit")
-        try {
-            return ExitCode.EXIT
-        } catch (e: Exception) {
-            console.printError(e)
-        }
-        return ExitCode.ERROR
+        return ExitCode.EXIT
     }
-
-    /**
-     * Метод отмены команды
-     * @return ExitCode
-     */
-    override fun undo(): ExitCode = ExitCode.ERROR
-
-    /**
-     * Метод, создающий полную копию команды
-     * @return Command
-     */
-    override fun deepCopy(): Command = Exit(console)
 }
