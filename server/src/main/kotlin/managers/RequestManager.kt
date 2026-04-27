@@ -17,8 +17,6 @@ class RequestManager(
 
     private val logger = LoggerFactory.getLogger(RequestManager::class.java)
     private val history: ArrayDeque<ServerCommand> = ArrayDeque()
-    private var scriptExecutionDepth = 0
-
     private val commandFactories: Map<CommandName, () -> ServerCommand> = mapOf(
         CommandName.ADD to { AddCommand(cm) },
         CommandName.ADD_IF_MAX to { AddIfMaxCommand(cm) },
@@ -60,59 +58,42 @@ class RequestManager(
     }
 
     private fun executeScript(lines: List<String>): IResponse {
-        if (scriptExecutionDepth >= MAX_SCRIPT_DEPTH) {
-            logger.error("Превышена максимальная глубина вложенности скриптов: {}", MAX_SCRIPT_DEPTH)
-            return CommandResponse(
-                ExitCode.ERROR,
-                "Превышена максимальная глубина вложенности скриптов: $MAX_SCRIPT_DEPTH"
-            )
-        }
-
         val collectionSnapshot = cm.takeSnapshot()
         val historySnapshot = history.toList()
-        scriptExecutionDepth++
 
-        logger.info(
-            "Начало транзакционного выполнения скрипта ({} строк, глубина {})",
-            lines.size,
-            scriptExecutionDepth
-        )
+        logger.info("Начало транзакционного выполнения скрипта ({} строк)", lines.size)
         val results = mutableListOf<String>()
 
-        try {
-            val reader = LineReader(lines)
-            while (reader.hasNext()) {
-                val commandName = reader.readLine()
-                if (commandName.isEmpty()) continue
+        val reader = LineReader(lines)
+        while (reader.hasNext()) {
+            val commandName = reader.readLine()
+            if (commandName.isEmpty()) continue
 
-                val request = try {
-                    parseScriptCommand(commandName, reader)
-                } catch (e: Exception) {
-                    logger.warn("Ошибка разбора команды '{}': {}", commandName, e.message)
-                    cm.restoreSnapshot(collectionSnapshot)
-                    history.clear()
-                    history.addAll(historySnapshot)
-                    return CommandResponse(
-                        ExitCode.ERROR,
-                        "Скрипт откатан: ошибка разбора команды '$commandName': ${e.message}"
-                    )
-                } ?: continue
+            val request = try {
+                parseScriptCommand(commandName, reader)
+            } catch (e: Exception) {
+                logger.warn("Ошибка разбора команды '{}': {}", commandName, e.message)
+                cm.restoreSnapshot(collectionSnapshot)
+                history.clear()
+                history.addAll(historySnapshot)
+                return CommandResponse(
+                    ExitCode.ERROR,
+                    "Скрипт откатан: ошибка разбора команды '$commandName': ${e.message}"
+                )
+            } ?: continue
 
-                val response = executeSingleCommand(request)
-                if (response.exitCode == ExitCode.ERROR) {
-                    cm.restoreSnapshot(collectionSnapshot)
-                    history.clear()
-                    history.addAll(historySnapshot)
-                    logger.warn("Скрипт откатан: ошибка в команде {}", request.commandName)
-                    return CommandResponse(
-                        ExitCode.ERROR,
-                        "Скрипт прерван и откатан: ${(response as CommandResponse).message}"
-                    )
-                }
-                (response as? CommandResponse)?.message?.takeIf { it.isNotEmpty() }?.let { results.add(it) }
+            val response = executeSingleCommand(request)
+            if (response.exitCode == ExitCode.ERROR) {
+                cm.restoreSnapshot(collectionSnapshot)
+                history.clear()
+                history.addAll(historySnapshot)
+                logger.warn("Скрипт откатан: ошибка в команде {}", request.commandName)
+                return CommandResponse(
+                    ExitCode.ERROR,
+                    "Скрипт прерван и откатан: ${(response as CommandResponse).message}"
+                )
             }
-        } finally {
-            scriptExecutionDepth--
+            (response as? CommandResponse)?.message?.takeIf { it.isNotEmpty() }?.let { results.add(it) }
         }
 
         logger.info("Скрипт выполнен успешно")
@@ -148,7 +129,4 @@ class RequestManager(
         }
     }
 
-    companion object {
-        const val MAX_SCRIPT_DEPTH = 5
-    }
 }
