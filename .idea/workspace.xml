@@ -8,7 +8,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes" />
+    <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -128,7 +133,7 @@
       <recent name="models" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.AppKt">
+  <component name="RunManager" selected="Kotlin.MainKt">
     <configuration name="CommandsTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -229,8 +234,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Kotlin.AppKt" />
         <item itemvalue="Kotlin.MainKt" />
+        <item itemvalue="Kotlin.AppKt" />
         <item itemvalue="Gradle.SerializationTest" />
         <item itemvalue="Gradle.ExecuteScriptTest" />
         <item itemvalue="Gradle.CommandsTest" />

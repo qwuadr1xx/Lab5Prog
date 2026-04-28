@@ -5,7 +5,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @ExperimentalUuidApi
-class Assembler(override val map: MutableMap<Uuid, MutableList<RUDPPacket>> = HashMap()) : IAssembler {
+class Assembler(override val map: MutableMap<Uuid, MutableList<RUDPPacket>> = LinkedHashMap()) : IAssembler {
     override fun addPacket(packet: RUDPPacket) {
         val packets = map.getOrPut(packet.uuid) { mutableListOf() }
         if (packets.any { it.chunkIndex == packet.chunkIndex }) return
@@ -34,6 +34,23 @@ class Assembler(override val map: MutableMap<Uuid, MutableList<RUDPPacket>> = Ha
             currentOffset += packet.serializedData.size
         }
 
+        map.remove(uuid)
+        evictOldest()
         return result
+    }
+
+    private fun evictOldest() {
+        val toRemove = (map.size * EVICT_FRACTION).toInt().coerceAtLeast(1)
+        val iterator = map.iterator()
+        repeat(toRemove) {
+            if (iterator.hasNext()) {
+                iterator.next()
+                iterator.remove()
+            }
+        }
+    }
+
+    companion object {
+        private const val EVICT_FRACTION = 0.25
     }
 }
