@@ -8,7 +8,8 @@ import java.util.Vector
 class CollectionManager(
     override val collection: Vector<StudyGroup> = Vector(),
     override var lastInitTime: LocalDateTime = LocalDateTime.now(),
-    override var lastEditTime: LocalDateTime = LocalDateTime.now()
+    override var lastEditTime: LocalDateTime = LocalDateTime.now(),
+    override var currentVersion: String = ""
 ) : ICollectionManager {
 
     override fun add(studyGroup: StudyGroup) {

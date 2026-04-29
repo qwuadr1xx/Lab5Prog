@@ -39,7 +39,9 @@ class RUDPReceiver(
                 val addr = channel.receive(recvBuffer)
                 if (addr != null) {
                     recvBuffer.flip()
-                    return RUDPPacket.fromByteBuffer(recvBuffer)
+                    if (recvBuffer.limit() >= RUDPPacket.HEADING) {
+                        return RUDPPacket.fromByteBuffer(recvBuffer)
+                    }
                 }
                 Thread.sleep(1)
             }

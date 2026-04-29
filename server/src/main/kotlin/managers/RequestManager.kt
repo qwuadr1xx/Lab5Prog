@@ -46,8 +46,9 @@ class RequestManager(
                 }
             val command = factory()
             val response = command.execute(request)
-            if (command.isUndoable && response.exitCode == ExitCode.OK) {
-                history.addLast(command)
+            if (response.exitCode == ExitCode.OK) {
+                if (command.isUndoable) history.addLast(command)
+                if (command.isMutating) saveCollection()
             }
             logger.info("Команда {} завершена со статусом {}", request.commandName, response.exitCode)
             response
@@ -122,10 +123,20 @@ class RequestManager(
 
     fun saveCollection() {
         try {
-            fm.writeCollection(cm.collection)
-            logger.info("Коллекция сохранена в файл")
+            val version = fm.writeCollection(cm.collection)
+            cm.currentVersion = version
+            logger.info("Коллекция сохранена в файл (версия {})", version)
         } catch (e: Exception) {
             logger.error("Ошибка при сохранении коллекции: {}", e.message, e)
+        }
+    }
+
+    fun clearVersionOnShutdown() {
+        try {
+            fm.clearVersion(cm.collection)
+            logger.info("Версия в файле очищена")
+        } catch (e: Exception) {
+            logger.error("Ошибка очистки версии: {}", e.message, e)
         }
     }
 

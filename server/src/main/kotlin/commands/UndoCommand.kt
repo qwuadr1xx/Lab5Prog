@@ -7,6 +7,7 @@ import net.responses.IResponse
 import utils.ExitCode
 
 class UndoCommand(private val history: ArrayDeque<ServerCommand>) : ServerCommand() {
+    override val isMutating = true
     override fun execute(request: IRequest): IResponse {
         request as UndoRequest
         val n = minOf(request.n, history.size)

@@ -9,4 +9,5 @@ abstract class ServerCommand {
     abstract fun execute(request: IRequest): IResponse
     open fun undo(): IResponse = CommandResponse(ExitCode.ERROR, "Команда не может быть отменена")
     open val isUndoable: Boolean = false
+    open val isMutating: Boolean get() = isUndoable
 }

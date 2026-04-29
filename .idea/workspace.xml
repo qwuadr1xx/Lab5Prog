@@ -9,10 +9,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/assembler/Assembler.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPReceiver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPReceiver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/managers/CollectionManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/managers/FileManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/managers/ICollectionManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/managers/IFileManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/utils/Utils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/utils/Utils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/resources/client.yml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/resources/client.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/server/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/ServerCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/ServerCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/UndoCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/UndoCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/CollectionManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/CollectionManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/FileManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/ICollectionManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/ICollectionManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/IFileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/IFileManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/RequestManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/RequestManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/resources/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/server.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,32 +111,32 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build Lab5Prog.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.CommandsTest.collection_should_be_initialized_from_file.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.CommandsTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ExecuteScriptTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Lab5Prog [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Lab5Prog [kotlinSourcesJar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Lab5Prog:app [dokkaGenerate].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Lab5Prog:common [dependencies].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Load Gradle Dependencies.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SerializationTest.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.ServerCommandsTest.executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.AppKt.executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;lab6&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/main/resources&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build Lab5Prog.executor": "Run",
+    "Gradle.CommandsTest.collection_should_be_initialized_from_file.executor": "Run",
+    "Gradle.CommandsTest.executor": "Run",
+    "Gradle.ExecuteScriptTest.executor": "Run",
+    "Gradle.Lab5Prog [clean].executor": "Run",
+    "Gradle.Lab5Prog [kotlinSourcesJar].executor": "Run",
+    "Gradle.Lab5Prog:app [dokkaGenerate].executor": "Run",
+    "Gradle.Lab5Prog:common [dependencies].executor": "Run",
+    "Gradle.Load Gradle Dependencies.executor": "Run",
+    "Gradle.SerializationTest.executor": "Run",
+    "Gradle.ServerCommandsTest.executor": "Run",
+    "Kotlin.AppKt.executor": "Run",
+    "Kotlin.MainKt.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "lab6",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/main/resources",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "ml.llm.LLMTrustedDomainsConfigurableProvider"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/src/main/resources" />
