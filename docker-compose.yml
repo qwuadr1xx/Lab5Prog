@@ -1,0 +1,66 @@
+services:
+  server1:
+    build:
+      context: .
+      target: server
+    environment:
+      SERVER_PORT: "9090"
+      SAVE_FILE_NAME: shared/save.csv
+    volumes:
+      - shared-data:/app/shared
+    networks:
+      - rudp-net
+    restart: unless-stopped
+
+  server2:
+    build:
+      context: .
+      target: server
+    environment:
+      SERVER_PORT: "9091"
+      SAVE_FILE_NAME: shared/save.csv
+    volumes:
+      - shared-data:/app/shared
+    networks:
+      - rudp-net
+    restart: unless-stopped
+
+  balancer:
+    build:
+      context: .
+      target: balancer
+    environment:
+      BALANCER_CONFIG: /app/config/balancer.yml
+    volumes:
+      - ./docker/balancer.yml:/app/config/balancer.yml:ro
+    ports:
+      - "8080:8080/udp"
+    depends_on:
+      - server1
+      - server2
+    networks:
+      - rudp-net
+    restart: unless-stopped
+
+  client:
+    build:
+      context: .
+      target: client
+    environment:
+      BALANCER_HOST: balancer
+      BALANCER_PORT: "8080"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - balancer
+    networks:
+      - rudp-net
+    profiles:
+      - client
+
+volumes:
+  shared-data:
+
+networks:
+  rudp-net:
+    driver: bridge

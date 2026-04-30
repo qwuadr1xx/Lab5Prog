@@ -1,0 +1,10 @@
+.gradle/
+.idea/
+build/
+*/build/
+**/*.class
+**/*.log
+*.csv
+docs/
+.claude
+.CLAUDE.md

@@ -3,7 +3,6 @@ package utils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import net.packet.RUDPPacket
 import net.requests.IRequest
 import net.responses.IResponse
@@ -19,7 +18,7 @@ enum class ExitCode {
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 fun RUDPPacketSplitter(request: IRequest): List<RUDPPacket> {
-    val byteArray = ProtoBuf.encodeToByteArray<IRequest>(request)
+    val byteArray = AppProtoBuf.encodeToByteArray<IRequest>(request)
     val chunkSize = 1024
     val totalChunks = (byteArray.size + chunkSize - 1) / chunkSize
     val uuid = Uuid.random()
@@ -48,7 +47,7 @@ fun RUDPPacketSplitter(request: IRequest): List<RUDPPacket> {
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 fun RUDPPacketSplitter(response: IResponse): List<RUDPPacket> {
-    val byteArray = ProtoBuf.encodeToByteArray<IResponse>(response)
+    val byteArray = AppProtoBuf.encodeToByteArray<IResponse>(response)
     val chunkSize = 1024
     val totalChunks = (byteArray.size + chunkSize - 1) / chunkSize
     val uuid = Uuid.random()
@@ -76,7 +75,7 @@ fun RUDPPacketSplitter(response: IResponse): List<RUDPPacket> {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-fun requestDeserializer(byteArray: ByteArray): IRequest = ProtoBuf.decodeFromByteArray<IRequest>(byteArray)
+fun requestDeserializer(byteArray: ByteArray): IRequest = AppProtoBuf.decodeFromByteArray<IRequest>(byteArray)
 
 @OptIn(ExperimentalSerializationApi::class)
-fun responseDeserializer(byteArray: ByteArray): IResponse = ProtoBuf.decodeFromByteArray<IResponse>(byteArray)
+fun responseDeserializer(byteArray: ByteArray): IResponse = AppProtoBuf.decodeFromByteArray<IResponse>(byteArray)

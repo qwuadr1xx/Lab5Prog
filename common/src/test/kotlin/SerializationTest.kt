@@ -1,4 +1,4 @@
-import kotlinx.serialization.protobuf.ProtoBuf
+import kotlinx.serialization.ExperimentalSerializationApi
 import models.Coordinates
 import models.StudyGroup
 import net.requests.*
@@ -6,23 +6,25 @@ import net.responses.CommandResponse
 import net.responses.IResponse
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import utils.AppProtoBuf
 import utils.ExitCode
 
+@OptIn(ExperimentalSerializationApi::class)
 class SerializationTest {
 
     // ─── helpers ──────────────────────────────────────────────────────────────
 
     private fun encodeRequest(request: IRequest): ByteArray =
-        ProtoBuf.encodeToByteArray(IRequest.serializer(), request)
+        AppProtoBuf.encodeToByteArray(IRequest.serializer(), request)
 
     private fun decodeRequest(bytes: ByteArray): IRequest =
-        ProtoBuf.decodeFromByteArray(IRequest.serializer(), bytes)
+        AppProtoBuf.decodeFromByteArray(IRequest.serializer(), bytes)
 
     private fun encodeResponse(response: IResponse): ByteArray =
-        ProtoBuf.encodeToByteArray(IResponse.serializer(), response)
+        AppProtoBuf.encodeToByteArray(IResponse.serializer(), response)
 
     private fun decodeResponse(bytes: ByteArray): IResponse =
-        ProtoBuf.decodeFromByteArray(IResponse.serializer(), bytes)
+        AppProtoBuf.decodeFromByteArray(IResponse.serializer(), bytes)
 
     private fun minimalGroup(name: String = "Test", averageMark: Long = 10) = StudyGroup(
         name = name,
@@ -36,8 +38,8 @@ class SerializationTest {
     @Test
     fun studyGroup_survives_protobuf_roundtrip() {
         val original = minimalGroup(name = "RoundtripGroup", averageMark = 42)
-        val bytes = ProtoBuf.encodeToByteArray(StudyGroup.serializer(), original)
-        val decoded = ProtoBuf.decodeFromByteArray(StudyGroup.serializer(), bytes)
+        val bytes = AppProtoBuf.encodeToByteArray(StudyGroup.serializer(), original)
+        val decoded = AppProtoBuf.decodeFromByteArray(StudyGroup.serializer(), bytes)
         assertEquals(original.name, decoded.name)
         assertEquals(original.averageMark, decoded.averageMark)
         assertEquals(original.expelledStudents, decoded.expelledStudents)

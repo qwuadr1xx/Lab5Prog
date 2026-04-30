@@ -1,0 +1,813 @@
+@startuml
+class ru.qwuadrixx.ServerConfig {
+}
+class ru.qwuadrixx.null {
+}
+class ru.qwuadrixx.app.models.askers.StudyGroupAsker {
++ StudyGroup ask()
++ StudyGroup ask(Int)
+}
+
+class net.assembler.Assembler$Companion {
+}
+class net.assembler.Assembler {
++ void addPacket(RUDPPacket)
++ Boolean isComplete(Uuid)
++ ByteArray assemble(Uuid)
+}
+
+class ru.qwuadrixx.client.RUDPServerSender {
++ void sendResponse(List<RUDPPacket>,InetAddress,Int)
+}
+
+class ru.qwuadrixx.app.commands.Show {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.app.commands.Clear {
++ ExitCode execute()
+}
+
+class net.requests.AddRequest {
+}
+class ru.qwuadrixx.commands.AddCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class ru.qwuadrixx.app.client.RUDPReceiver {
++ IResponse receiveResponse()
+}
+
+interface ru.qwuadrixx.managers.IFileManager {
++ String fileName
++ String writeCollection(Collection<StudyGroup>)
++ Pair<String, List<StudyGroup>>? readCollection()
++ void clearVersion(Collection<StudyGroup>)
+}
+
+
+class ru.qwuadrixx.balancer.forwarder.RequestForwarder {
++ void sendPing(InetAddress,Int)
++ void sendRequest(List<RUDPPacket>,InetAddress,Int)
+}
+
+class ru.qwuadrixx.app.models.askers.CoordinatesAsker {
++ Coordinates ask()
+}
+
+abstract class ru.qwuadrixx.commands.ServerCommand {
++ Boolean isUndoable
++ Boolean isMutating
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+enum utils.CommandName {
++  HELP
++  INFO
++  SHOW
++  ADD
++  UPDATE
++  REMOVE_BY_ID
++  CLEAR
++  EXECUTE_SCRIPT
++  EXIT
++  INSERT_AT
++  REMOVE_LAST
++  ADD_IF_MAX
++  AVERAGE_OF_AVERAGE_MARK
++  COUNT_LESS_THAN_AVERAGE_MARK
++  COUNT_GREATER_THAN_AVERAGE_MARK
++  UNDO
+}
+
+class ru.qwuadrixx.app.commands.Exit {
++ ExitCode execute()
+}
+
+class MockRUDPClient {
++ net.requests.IRequest? lastRequest
++ IResponse sendAndReceive(net.requests.IRequest)
+}
+
+
+class CommandsTest {
++ void setUp()
++ void add_should_send_add_request_and_return_ok()
++ void show_should_send_show_request_and_return_ok()
++ void clear_should_send_clear_request_and_return_ok()
++ void info_should_send_info_request_and_return_ok()
++ void help_should_return_ok_and_list_commands()
++ void exit_should_return_exit_code()
++ void remove_last_should_send_remove_last_request()
++ void remove_by_id_should_send_remove_by_id_request()
++ void undo_should_send_undo_request()
++ void average_of_average_mark_should_send_request()
++ void count_less_than_average_mark_should_send_request()
++ void count_greater_than_average_mark_should_send_request()
++ void command_should_return_error_when_server_returns_error()
+}
+
+class net.requests.InsertAtRequest {
+}
+class ru.qwuadrixx.app.commands.Undo {
++ ExitCode execute()
+}
+
+interface ru.qwuadrixx.managers.ICollectionManager {
++ Vector<StudyGroup> collection
++ LocalDateTime lastInitTime
++ LocalDateTime lastEditTime
++ String currentVersion
++ void add(StudyGroup)
++ void updateById(Int,StudyGroup)
++ void removeById(Int)
++ void clear()
++ void insertAt(Int,StudyGroup)
++ void removeLast()
++ Boolean addIfMax(StudyGroup)
++ Long getAverageMarkFromAll()
++ Long countAverageMarkLessThen(Long)
++ Long countAverageMarkGreaterThen(Long)
++ List<StudyGroup> takeSnapshot()
++ void restoreSnapshot(List<StudyGroup>)
+}
+
+
+class ru.qwuadrixx.client.RUDPServer {
++ void runner()
+}
+
+class net.responses.CommandResponse {
+}
+class ru.qwuadrixx.client.RUDPServerReceiver {
++ Pair<InetAddress, Int> receivePing(DatagramPacket)
++ IRequest receiveRequest(InetAddress,Int)
+}
+
+class ru.qwuadrixx.app.ClientConfig {
+}
+class ru.qwuadrixx.app.null {
+}
+class TestConsole {
++  lines
++ String readLine()
++ void printLine(String)
++ void printObject(Any)
++ void printError(Exception)
++ void printError(String)
++ void setFileMode(String)
++ void setInteractiveMode()
+}
+
+
+class ru.qwuadrixx.commands.RemoveByIdCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class models.StudyGroup {
++ Int compareTo(StudyGroup)
+}
+
+class ru.qwuadrixx.app.client.RUDPClient {
++ IResponse sendAndReceive(IRequest)
+}
+
+class ru.qwuadrixx.commands.ClearCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class exception.ValidationException {
+}
+interface ru.qwuadrixx.managers.IRequestManager {
++ IResponse dispatch(IRequest)
+}
+
+class exception.UndoException {
+}
+class ru.qwuadrixx.app.commands.RemoveById {
++ ExitCode execute()
+}
+
+interface ru.qwuadrixx.app.console.IConsole {
++ Boolean fileMode
++ BufferedReader reader
++ String readLine()
++ void printLine(String)
++ void printObject(Any)
++ void printError(Exception)
++ void printError(String)
++ void setFileMode(String)
++ void setInteractiveMode()
+}
+
+
+class ru.qwuadrixx.app.client.RUDPSender {
++ void ping()
++ void sendPackets(List<RUDPPacket>)
++ void sendACK()
+}
+
+interface ru.qwuadrixx.app.client.IRUDPClient {
++ IResponse sendAndReceive(IRequest)
+}
+
+class ru.qwuadrixx.utils.StudyGroupFactory {
++ Int nextId()
++ void syncIdGenerator(Int)
++ void decrementId()
++ StudyGroup assignServerFields(StudyGroup)
++ StudyGroup forUpdate(StudyGroup,Int,LocalDateTime)
+}
+
+class buildsrc.convention.KotlinJvmPlugin {
++ void apply(org.gradle.api.Project)
+}
+
+class ru.qwuadrixx.commands.CountLessThanAverageMarkCommand {
++ IResponse execute(IRequest)
+}
+
+class ru.qwuadrixx.commands.AverageOfAverageMarkCommand {
++ IResponse execute(IRequest)
+}
+
+class exception.ScriptErrorException {
+}
+class ru.qwuadrixx.app.commands.CountGreaterThanAverageMark {
++ ExitCode execute()
+}
+
+class exception.ScriptRecursionException {
+}
+enum utils.ExitCode {
++  OK
++  ERROR
++  EXIT
+}
+
+class ru.qwuadrixx.app.commands.Help {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.managers.FileWatcher {
++ void run()
+}
+
+class net.requests.CountLessThanAverageMarkRequest {
+}
+class net.requests.AverageOfAverageMarkRequest {
+}
+class ru.qwuadrixx.managers.FileManager {
++ String writeCollection(Collection<StudyGroup>)
++ Pair<String, List<StudyGroup>>? readCollection()
++ void clearVersion(Collection<StudyGroup>)
+}
+
+class ru.qwuadrixx.balancer.selector.NodeSelector {
++ ServerNode select()
+}
+
+class net.responses.AddResponse {
+}
+interface net.requests.IRequest {
++ CommandName commandName
+}
+
+class ru.qwuadrixx.app.commands.RemoveLast {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.balancer.selector.ServerNode {
++  address
++ Boolean isAvailable()
++ void markDead()
++ void markAlive()
+}
+
+
+class utils.DateSerializer {
++ SerialDescriptor descriptor
++ void serialize(Encoder,Date)
++ Date deserialize(Decoder)
+}
+
+
+class ru.qwuadrixx.app.managers.CommandManager {
++ void register(Command)
++ Command getCommand(String)
+}
+
+class ru.qwuadrixx.app.commands.ExecuteScript$Companion {
++ MutableSet<String> activeScripts
+}
+
+class ru.qwuadrixx.app.commands.ExecuteScript {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.commands.RemoveLastCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class ru.qwuadrixx.commands.CountGreaterThanAverageMarkCommand {
++ IResponse execute(IRequest)
+}
+
+class net.requests.ClearRequest {
+}
+class ru.qwuadrixx.app.commands.InsertAt {
++ ExitCode execute()
+}
+
+class net.requests.InfoRequest {
+}
+class ExecuteScriptTest$MockClient {
++ net.requests.IRequest? lastRequest
++ IResponse sendAndReceive(net.requests.IRequest)
+}
+
+
+class ExecuteScriptTest {
++ void executeScript_sends_raw_lines_to_server()
++ void executeScript_expands_nested_script_inline()
++ void executeScript_detects_self_referencing_recursion()
++ void executeScript_detects_indirect_recursion()
++ void executeScript_returns_error_for_nonexistent_file()
++ void executeScript_returns_ok_for_empty_file()
++ void executeScript_propagates_server_exit_code()
+}
+
+class ru.qwuadrixx.app.console.Console {
++ String readLine()
++ void printLine(String)
++ void printObject(Any)
++ void printError(Exception)
++ void printError(String)
++ void setFileMode(String)
++ void setInteractiveMode()
+}
+
+class ru.qwuadrixx.parsers.StudyGroupParser {
++ StudyGroup parse(LineReader)
++ StudyGroup parse(LineReader,Int)
+}
+
+class ru.qwuadrixx.commands.ShowCommand {
++ IResponse execute(IRequest)
+}
+
+class ru.qwuadrixx.app.commands.CountLessThanAverageMark {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.app.commands.AddIfMax {
++ ExitCode execute()
+}
+
+class net.requests.CountGreaterThanAverageMarkRequest {
+}
+class ru.qwuadrixx.balancer.RUDPBalancer {
++ void start()
+}
+
+class exception.CommandNotFoundException {
+}
+class org.gradle.accessors.dm.LibrariesForLibs {
++ Provider<MinimalExternalModuleDependency> getKotlinGradlePlugin()
++ Provider<MinimalExternalModuleDependency> getKotlinxCoroutines()
++ Provider<MinimalExternalModuleDependency> getKotlinxDatetime()
++ Provider<MinimalExternalModuleDependency> getKotlinxSerialization()
++ VersionAccessors getVersions()
++ BundleAccessors getBundles()
++ PluginAccessors getPlugins()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibs$VersionAccessors {
++ Provider<String> getKotlin()
++ Provider<String> getKotlinxCoroutines()
++ Provider<String> getKotlinxDatetime()
++ Provider<String> getKotlinxSerializationJSON()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibs$BundleAccessors {
++ Provider<ExternalModuleDependencyBundle> getKotlinxEcosystem()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibs$PluginAccessors {
++ Provider<PluginDependency> getKotlinPluginSerialization()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock {
++ Provider<MinimalExternalModuleDependency> getKotlinGradlePlugin()
++ Provider<MinimalExternalModuleDependency> getKotlinxCoroutines()
++ Provider<MinimalExternalModuleDependency> getKotlinxDatetime()
++ Provider<MinimalExternalModuleDependency> getKotlinxSerialization()
++ VersionAccessors getVersions()
++ BundleAccessors getBundles()
++ PluginAccessors getPlugins()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$VersionAccessors {
++ Provider<String> getKotlin()
++ Provider<String> getKotlinxCoroutines()
++ Provider<String> getKotlinxDatetime()
++ Provider<String> getKotlinxSerializationJSON()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$BundleAccessors {
++ Provider<ExternalModuleDependencyBundle> getKotlinxEcosystem()
+}
+
+class org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$PluginAccessors {
++ Provider<PluginDependency> getKotlinPluginSerialization()
+}
+
+class ru.qwuadrixx.client.HealthCheckListener {
++ void run()
+}
+
+interface net.assembler.IAssembler {
++ Map<Uuid, List<RUDPPacket>> map
++ void addPacket(RUDPPacket)
++ Boolean isComplete(Uuid)
++ ByteArray assemble(Uuid)
+}
+
+
+class ru.qwuadrixx.balancer.ServerAddress {
+}
+class ru.qwuadrixx.balancer.BalancerConfig {
+}
+class ru.qwuadrixx.balancer.null {
+}
+interface ru.qwuadrixx.app.models.askers.Asker {
++ T ask()
+}
+
+class ru.qwuadrixx.commands.InsertAtCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class ru.qwuadrixx.managers.RequestManager {
++ IResponse dispatch(IRequest)
++ void saveCollection()
++ void clearVersionOnShutdown()
+}
+
+class ru.qwuadrixx.app.commands.Info {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.app.commands.Add {
++ ExitCode execute()
+}
+
+class net.requests.RemoveByIdRequest {
+}
+class net.requests.ExecuteScriptRequest {
+}
+class ru.qwuadrixx.commands.InfoCommand {
++ IResponse execute(IRequest)
+}
+
+class ru.qwuadrixx.commands.SaveCommand {
++ IResponse execute(IRequest)
+}
+
+interface net.responses.IResponse {
++ ExitCode exitCode
+}
+
+class ru.qwuadrixx.balancer.forwarder.ServerResponseReceiver {
++ IResponse receiveResponse(InetAddress,Int)
+}
+
+abstract class ru.qwuadrixx.app.commands.Command {
++ ExitCode execute()
+}
+
+class exception.NotFoundException {
+}
+class net.requests.ShowRequest {
+}
+class ru.qwuadrixx.balancer.health.NodeHealthChecker {
++ void run()
+}
+
+class exception.ServerTimeoutException {
+}
+class models.Coordinates {
+}
+class ru.qwuadrixx.balancer.forwarder.ResponseForwarder {
++ void sendResponse(List<RUDPPacket>,InetAddress,Int)
+}
+
+class ru.qwuadrixx.app.commands.Update {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.commands.UndoCommand {
++  isMutating
++ IResponse execute(IRequest)
+}
+
+
+class ru.qwuadrixx.app.utils.PrettyMap {
++ String toString()
+}
+
+class ru.qwuadrixx.commands.UpdateCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class ru.qwuadrixx.app.models.askers.SemesterAsker {
++ Semester? ask()
+}
+
+class ru.qwuadrixx.balancer.receiver.BalancerReceiver {
++ Pair<InetAddress, Int> receivePing(DatagramPacket)
++ IRequest receiveRequest(InetAddress,Int)
+}
+
+class ru.qwuadrixx.app.models.askers.PersonAsker {
++ Person ask()
+}
+
+class net.requests.UndoRequest {
+}
+class net.packet.RUDPPacket$Companion {
++  HEADING
++ RUDPPacket fromByteBuffer(ByteBuffer)
++ RUDPPacket fromByteArray(ByteArray)
++ ByteBuffer byteBufferACK()
++ ByteBuffer byteBufferPING()
++ ByteBuffer byteBufferFIN()
++ ByteArray byteArrayACK()
++ ByteArray byteArrayPING()
++ ByteArray byteArrayFIN()
++ Boolean isByteBufferACK(ByteBuffer)
++ Boolean isByteBufferPING(ByteBuffer)
++ Boolean isByteBufferFIN(ByteBuffer)
++ Boolean isByteArrayACK(ByteArray)
++ Boolean isByteArrayPING(ByteArray)
++ Boolean isByteArrayFIN(ByteArray)
+}
+
+
+class net.packet.RUDPPacket {
++ ByteBuffer toByteBuffer()
++ ByteArray toByteArray()
+}
+
+class net.requests.UpdateRequest {
+}
+interface ru.qwuadrixx.app.managers.ICommandManager {
++ MutableMap<String, Command> commands
++ void register(Command)
++ Command getCommand(String)
+}
+
+
+class NoOpFileManager {
++  fileName
++ void writeCollection(Collection<StudyGroup>)
++ List<StudyGroup>? readCollection()
+}
+
+
+class ServerCommandsTest {
++ void setUp()
++ void add_increases_collection_size()
++ void add_element_is_present_in_collection()
++ void add_if_max_adds_element_when_it_exceeds_all_existing()
++ void add_if_max_does_not_add_when_element_is_not_max()
++ void add_if_max_adds_to_empty_collection()
++ void show_returns_ok_for_empty_collection()
++ void show_returns_all_elements_when_collection_is_not_empty()
++ void info_returns_collection_type_and_size()
++ void clear_empties_a_non_empty_collection()
++ void clear_on_empty_collection_returns_ok()
++ void remove_last_removes_the_last_element()
++ void remove_last_on_empty_collection_returns_error()
++ void remove_by_id_removes_the_correct_element()
++ void remove_by_id_returns_error_for_nonexistent_id()
++ void insert_at_places_element_at_given_index()
++ void update_replaces_element_with_matching_id()
++ void update_returns_error_for_nonexistent_id()
++ void average_of_average_mark_returns_zero_for_empty_collection()
++ void average_of_average_mark_calculates_mean_correctly()
++ void count_less_than_average_mark_counts_correctly()
++ void count_less_than_average_mark_returns_zero_when_none_qualify()
++ void count_greater_than_average_mark_counts_correctly()
++ void undo_reverts_last_add()
++ void undo_reverts_last_clear()
++ void undo_reverts_multiple_commands_in_order()
++ void undo_on_empty_history_returns_error()
++ void undo_reverts_remove_by_id()
++ void undo_reverts_update()
++ void execute_script_parses_and_executes_add_lines()
++ void execute_script_rolls_back_all_changes_when_any_command_fails()
++ void execute_script_rollback_restores_history()
++ void execute_script_returns_ok_for_empty_lines()
++ void execute_script_skips_unknown_command_names()
++ void execute_script_accumulates_output_from_all_commands()
++ void execute_script_parse_error_rolls_back()
++ void dispatch_returns_ok_for_all_known_read_only_commands()
++ void collection_manager_snapshot_preserves_state()
++ void add_then_update_then_undo_restores_original()
++ void clear_then_undo_then_remove_last_leaves_empty_collection()
+}
+
+enum models.Semester {
++  THIRD
++  SEVENTH
++  EIGHTH
+}
+
+class ru.qwuadrixx.commands.AddIfMaxCommand {
++  isUndoable
++ IResponse execute(IRequest)
++ IResponse undo()
+}
+
+
+class net.requests.RemoveLastRequest {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgPluginGroup {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgGradlePluginGroup {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgJetbrainsPluginGroup {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgJetbrainsKotlinPluginGroup {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgJetbrainsKotlinNativePluginGroup {
+}
+class gradle.kotlin.dsl.plugins._4cf40d53bcadeb3b2faf57b2206989dc.OrgJetbrainsKotlinPluginPluginGroup {
+}
+class net.requests.AddIfMaxRequest {
+}
+class ru.qwuadrixx.managers.CollectionManager {
++ void add(StudyGroup)
++ void updateById(Int,StudyGroup)
++ void removeById(Int)
++ void clear()
++ void insertAt(Int,StudyGroup)
++ void removeLast()
++ Boolean addIfMax(StudyGroup)
++ Long getAverageMarkFromAll()
++ Long countAverageMarkLessThen(Long)
++ Long countAverageMarkGreaterThen(Long)
++ List<StudyGroup> takeSnapshot()
++ void restoreSnapshot(List<StudyGroup>)
+}
+
+class SerializationTest {
++ void studyGroup_survives_protobuf_roundtrip()
++ void addRequest_roundtrip_preserves_study_group()
++ void addIfMaxRequest_roundtrip()
++ void showRequest_roundtrip()
++ void infoRequest_roundtrip()
++ void clearRequest_roundtrip()
++ void removeLastRequest_roundtrip()
++ void removeByIdRequest_roundtrip_preserves_id()
++ void insertAtRequest_roundtrip_preserves_index_and_group()
++ void updateRequest_roundtrip_preserves_id_and_group()
++ void averageOfAverageMarkRequest_roundtrip()
++ void countLessThanAverageMarkRequest_roundtrip_preserves_threshold()
++ void countGreaterThanAverageMarkRequest_roundtrip_preserves_threshold()
++ void undoRequest_roundtrip_preserves_n()
++ void executeScriptRequest_roundtrip_preserves_lines()
++ void executeScriptRequest_empty_lines_roundtrip()
++ void commandResponse_ok_roundtrip()
++ void commandResponse_error_roundtrip()
++ void commandResponse_empty_message_roundtrip()
++ void polymorphic_sealed_dispatch_works_for_all_request_types()
+}
+
+class ru.qwuadrixx.app.commands.AverageOfAverageMark {
++ ExitCode execute()
+}
+
+class ru.qwuadrixx.parsers.LineReader {
++ String readLine()
++ Boolean hasNext()
+}
+
+class models.Person {
+}
+
+
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.StudyGroupAsker
+net.assembler.Assembler +.. net.assembler.Assembler$Companion
+net.assembler.IAssembler <|.. net.assembler.Assembler
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Show
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Clear
+net.requests.IRequest <|.. net.requests.AddRequest
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.AddCommand
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.CoordinatesAsker
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Exit
+ru.qwuadrixx.app.client.IRUDPClient <|.. MockRUDPClient
+net.requests.IRequest <|.. net.requests.InsertAtRequest
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Undo
+net.responses.IResponse <|.. net.responses.CommandResponse
+ru.qwuadrixx.app.console.IConsole <|.. TestConsole
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.RemoveByIdCommand
+models.Comparable <|.. models.StudyGroup
+ru.qwuadrixx.app.client.IRUDPClient <|.. ru.qwuadrixx.app.client.RUDPClient
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.ClearCommand
+exception.Exception <|-- exception.ValidationException
+exception.Exception <|-- exception.UndoException
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.RemoveById
+buildsrc.convention.Plugin <|.. buildsrc.convention.KotlinJvmPlugin
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.CountLessThanAverageMarkCommand
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.AverageOfAverageMarkCommand
+exception.Exception <|-- exception.ScriptErrorException
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.CountGreaterThanAverageMark
+exception.Exception <|-- exception.ScriptRecursionException
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Help
+ru.qwuadrixx.managers.Runnable <|.. ru.qwuadrixx.managers.FileWatcher
+net.requests.IRequest <|.. net.requests.CountLessThanAverageMarkRequest
+net.requests.IRequest <|.. net.requests.AverageOfAverageMarkRequest
+ru.qwuadrixx.managers.IFileManager <|.. ru.qwuadrixx.managers.FileManager
+net.responses.IResponse <|.. net.responses.AddResponse
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.RemoveLast
+kotlinx.serialization.KSerializer <|.. utils.DateSerializer
+ru.qwuadrixx.app.managers.ICommandManager <|.. ru.qwuadrixx.app.managers.CommandManager
+ru.qwuadrixx.app.commands.ExecuteScript +.. ru.qwuadrixx.app.commands.ExecuteScript$Companion
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.ExecuteScript
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.RemoveLastCommand
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.CountGreaterThanAverageMarkCommand
+net.requests.IRequest <|.. net.requests.ClearRequest
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.InsertAt
+net.requests.IRequest <|.. net.requests.InfoRequest
+ExecuteScriptTest +.. ExecuteScriptTest$MockClient
+IRUDPClient <|.. ExecuteScriptTest$MockClient
+ru.qwuadrixx.app.console.IConsole <|.. ru.qwuadrixx.app.console.Console
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.ShowCommand
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.CountLessThanAverageMark
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.AddIfMax
+net.requests.IRequest <|.. net.requests.CountGreaterThanAverageMarkRequest
+exception.Exception <|-- exception.CommandNotFoundException
+org.gradle.api.internal.catalog.AbstractExternalDependencyFactory <|-- org.gradle.accessors.dm.LibrariesForLibs
+org.gradle.accessors.dm.LibrariesForLibs +.. org.gradle.accessors.dm.LibrariesForLibs$VersionAccessors
+org.gradle.accessors.dm.VersionFactory <|-- org.gradle.accessors.dm.LibrariesForLibs$VersionAccessors
+org.gradle.accessors.dm.LibrariesForLibs +.. org.gradle.accessors.dm.LibrariesForLibs$BundleAccessors
+org.gradle.accessors.dm.BundleFactory <|-- org.gradle.accessors.dm.LibrariesForLibs$BundleAccessors
+org.gradle.accessors.dm.LibrariesForLibs +.. org.gradle.accessors.dm.LibrariesForLibs$PluginAccessors
+org.gradle.accessors.dm.PluginFactory <|-- org.gradle.accessors.dm.LibrariesForLibs$PluginAccessors
+org.gradle.api.internal.catalog.AbstractExternalDependencyFactory <|-- org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock
+org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock +.. org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$VersionAccessors
+org.gradle.accessors.dm.VersionFactory <|-- org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$VersionAccessors
+org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock +.. org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$BundleAccessors
+org.gradle.accessors.dm.BundleFactory <|-- org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$BundleAccessors
+org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock +.. org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$PluginAccessors
+org.gradle.accessors.dm.PluginFactory <|-- org.gradle.accessors.dm.LibrariesForLibsInPluginsBlock$PluginAccessors
+ru.qwuadrixx.client.Runnable <|.. ru.qwuadrixx.client.HealthCheckListener
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.InsertAtCommand
+ru.qwuadrixx.managers.IRequestManager <|.. ru.qwuadrixx.managers.RequestManager
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Info
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Add
+net.requests.IRequest <|.. net.requests.RemoveByIdRequest
+net.requests.IRequest <|.. net.requests.ExecuteScriptRequest
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.InfoCommand
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.SaveCommand
+exception.Exception <|-- exception.NotFoundException
+net.requests.IRequest <|.. net.requests.ShowRequest
+ru.qwuadrixx.balancer.health.Runnable <|.. ru.qwuadrixx.balancer.health.NodeHealthChecker
+exception.Exception <|-- exception.ServerTimeoutException
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.Update
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.UndoCommand
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.UpdateCommand
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.SemesterAsker
+ru.qwuadrixx.app.models.askers.Asker <|.. ru.qwuadrixx.app.models.askers.PersonAsker
+net.requests.IRequest <|.. net.requests.UndoRequest
+net.packet.RUDPPacket +.. net.packet.RUDPPacket$Companion
+net.requests.IRequest <|.. net.requests.UpdateRequest
+ru.qwuadrixx.managers.IFileManager <|.. NoOpFileManager
+ru.qwuadrixx.commands.ServerCommand <|-- ru.qwuadrixx.commands.AddIfMaxCommand
+net.requests.IRequest <|.. net.requests.RemoveLastRequest
+net.requests.IRequest <|.. net.requests.AddIfMaxRequest
+ru.qwuadrixx.managers.ICollectionManager <|.. ru.qwuadrixx.managers.CollectionManager
+ru.qwuadrixx.app.commands.Command <|-- ru.qwuadrixx.app.commands.AverageOfAverageMark
+@enduml

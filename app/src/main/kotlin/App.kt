@@ -25,13 +25,16 @@ private data class ClientConfig(
 private fun loadConfig(): ClientConfig {
     val stream = object {}.javaClass.getResourceAsStream("/client.yml")
         ?: return ClientConfig().also { logger.warn("client.yml не найден, используются значения по умолчанию") }
-    return try {
+    val base = try {
         Yaml.default.decodeFromString(ClientConfig.serializer(), stream.bufferedReader().readText())
-            .also { logger.info("Конфигурация клиента: host={}, port={}", it.serverHost, it.serverPort) }
     } catch (e: Exception) {
         logger.error("Ошибка загрузки client.yml: {}", e.message)
         ClientConfig()
     }
+    val host = System.getenv("BALANCER_HOST") ?: base.serverHost
+    val port = System.getenv("BALANCER_PORT")?.toIntOrNull() ?: base.serverPort
+    return base.copy(serverHost = host, serverPort = port)
+        .also { logger.info("Конфигурация клиента: host={}, port={}", it.serverHost, it.serverPort) }
 }
 
 /**

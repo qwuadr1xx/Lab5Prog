@@ -23,7 +23,10 @@ private data class BalancerConfig(
 )
 
 private fun loadConfig(): BalancerConfig {
-    val stream = object {}.javaClass.getResourceAsStream("/balancer.yml")
+    val externalPath = System.getenv("BALANCER_CONFIG")
+    val stream = externalPath
+        ?.let { java.io.File(it).takeIf { f -> f.exists() }?.inputStream() }
+        ?: object {}.javaClass.getResourceAsStream("/balancer.yml")
         ?: return BalancerConfig().also { logger.warn("balancer.yml не найден, используются значения по умолчанию") }
     return try {
         Yaml.default.decodeFromString(BalancerConfig.serializer(), stream.bufferedReader().readText())
