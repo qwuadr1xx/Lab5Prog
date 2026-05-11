@@ -1,41 +1,12 @@
 package ru.qwuadrixx.app
 
-import com.charleskorn.kaml.Yaml
 import exception.CommandNotFoundException
-import kotlinx.serialization.Serializable
-import net.assembler.Assembler
-import org.slf4j.LoggerFactory
-import ru.qwuadrixx.app.client.RUDPClient
-import ru.qwuadrixx.app.commands.*
+import org.koin.core.context.startKoin
 import ru.qwuadrixx.app.console.Console
+import ru.qwuadrixx.app.di.appModule
 import ru.qwuadrixx.app.managers.CommandManager
 import utils.ExitCode
 import kotlin.system.exitProcess
-
-private val logger = LoggerFactory.getLogger("App")
-
-@Serializable
-private data class ClientConfig(
-    val serverHost: String = "localhost",
-    val serverPort: Int = 8081,
-    val maxRetries: Int = 3,
-    val socketTimeoutMs: Int = 3000
-)
-
-private fun loadConfig(): ClientConfig {
-    val stream = object {}.javaClass.getResourceAsStream("/client.yml")
-        ?: return ClientConfig().also { logger.warn("client.yml не найден, используются значения по умолчанию") }
-    val base = try {
-        Yaml.default.decodeFromString(ClientConfig.serializer(), stream.bufferedReader().readText())
-    } catch (e: Exception) {
-        logger.error("Ошибка загрузки client.yml: {}", e.message)
-        ClientConfig()
-    }
-    val host = System.getenv("BALANCER_HOST") ?: base.serverHost
-    val port = System.getenv("BALANCER_PORT")?.toIntOrNull() ?: base.serverPort
-    return base.copy(serverHost = host, serverPort = port)
-        .also { logger.info("Конфигурация клиента: host={}, port={}", it.serverHost, it.serverPort) }
-}
 
 /**
  * Метод входа в программу
@@ -43,29 +14,12 @@ private fun loadConfig(): ClientConfig {
  */
 @kotlin.uuid.ExperimentalUuidApi
 fun main() {
-    val config = loadConfig()
-    val console = Console()
-    val rudpClient = RUDPClient(Assembler(), config.serverHost, config.serverPort, config.maxRetries, config.socketTimeoutMs)
-    val commandManager = CommandManager()
+    val koin = startKoin {
+        modules(appModule)
+    }.koin
 
-    commandManager.apply {
-        register(Add(rudpClient, console))
-        register(AddIfMax(rudpClient, console))
-        register(Show(rudpClient, console))
-        register(AverageOfAverageMark(rudpClient, console))
-        register(Clear(rudpClient, console))
-        register(CountLessThanAverageMark(rudpClient, console))
-        register(CountGreaterThanAverageMark(rudpClient, console))
-        register(ExecuteScript(rudpClient, console))
-        register(Exit(console))
-        register(Help(console, commandManager))
-        register(Info(rudpClient, console))
-        register(InsertAt(rudpClient, console))
-        register(RemoveById(rudpClient, console))
-        register(RemoveLast(rudpClient, console))
-        register(Update(rudpClient, console))
-        register(Undo(rudpClient, console))
-    }
+    val console = koin.get<Console>()
+    val commandManager = koin.get<CommandManager>()
 
     while (true) {
         try {

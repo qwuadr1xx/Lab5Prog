@@ -8,8 +8,6 @@ interface ICollectionManager {
     val collection: Vector<StudyGroup>
     val lastInitTime: LocalDateTime
     val lastEditTime: LocalDateTime
-    var currentVersion: String
-
     fun add(studyGroup: StudyGroup)
     fun updateById(id: Int, studyGroup: StudyGroup)
     fun removeById(id: Int)

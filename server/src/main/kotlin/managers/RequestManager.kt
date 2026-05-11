@@ -11,8 +11,7 @@ import utils.CommandName
 import utils.ExitCode
 
 class RequestManager(
-    private val cm: ICollectionManager,
-    private val fm: IFileManager
+    private val cm: ICollectionManager
 ) : IRequestManager {
 
     private val logger = LoggerFactory.getLogger(RequestManager::class.java)
@@ -46,9 +45,8 @@ class RequestManager(
                 }
             val command = factory()
             val response = command.execute(request)
-            if (response.exitCode == ExitCode.OK) {
-                if (command.isUndoable) history.addLast(command)
-                if (command.isMutating) saveCollection()
+            if (response.exitCode == ExitCode.OK && command.isUndoable) {
+                history.addLast(command)
             }
             logger.info("Команда {} завершена со статусом {}", request.commandName, response.exitCode)
             response
@@ -114,30 +112,9 @@ class RequestManager(
         "update" -> {
             val id = reader.readLine().toInt(); UpdateRequest(id, StudyGroupParser.parse(reader, id))
         }
-
         "count_greater_than_average_mark" -> CountGreaterThanAverageMarkRequest(reader.readLine().toLong())
         "count_less_than_average_mark" -> CountLessThanAverageMarkRequest(reader.readLine().toLong())
         "undo" -> UndoRequest(reader.readLine().toInt())
         else -> null
     }
-
-    fun saveCollection() {
-        try {
-            val version = fm.writeCollection(cm.collection)
-            cm.currentVersion = version
-            logger.info("Коллекция сохранена в файл (версия {})", version)
-        } catch (e: Exception) {
-            logger.error("Ошибка при сохранении коллекции: {}", e.message, e)
-        }
-    }
-
-    fun clearVersionOnShutdown() {
-        try {
-            fm.clearVersion(cm.collection)
-            logger.info("Версия в файле очищена")
-        } catch (e: Exception) {
-            logger.error("Ошибка очистки версии: {}", e.message, e)
-        }
-    }
-
 }

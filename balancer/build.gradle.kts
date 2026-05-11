@@ -22,6 +22,7 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.57.0")
     implementation("org.slf4j:slf4j-api:2.0.13")
     implementation("ch.qos.logback:logback-classic:1.5.6")
+    implementation("io.insert-koin:koin-core:3.5.3")
 }
 
 tasks.register<Jar>("fatJar") {

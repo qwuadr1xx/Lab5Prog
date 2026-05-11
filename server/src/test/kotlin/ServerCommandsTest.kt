@@ -7,19 +7,9 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import ru.qwuadrixx.managers.CollectionManager
-import ru.qwuadrixx.managers.IFileManager
 import ru.qwuadrixx.managers.RequestManager
 import utils.ExitCode
 import java.util.Vector
-
-// ─── Test infrastructure ──────────────────────────────────────────────────────
-
-/** No-op file manager — avoids disk I/O in tests */
-class NoOpFileManager : IFileManager {
-    override val fileName = "test.csv"
-    override fun writeCollection(collection: Collection<StudyGroup>) {}
-    override fun readCollection(): List<StudyGroup>? = null
-}
 
 fun exitCode(response: IResponse): ExitCode = (response as CommandResponse).exitCode
 fun message(response: IResponse): String = (response as CommandResponse).message
@@ -45,7 +35,7 @@ class ServerCommandsTest {
     @BeforeEach
     fun setUp() {
         collectionManager = CollectionManager()
-        requestManager = RequestManager(collectionManager, NoOpFileManager())
+        requestManager = RequestManager(collectionManager)
     }
 
     // ── add ───────────────────────────────────────────────────────────────────
