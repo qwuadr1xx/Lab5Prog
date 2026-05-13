@@ -4,19 +4,19 @@ import net.requests.ClearRequest
 import net.responses.CommandResponse
 import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 
-/**
- * Команда clear
- * @author qwuadrixx
- */
-class Clear(private val rudpClient: IRUDPClient, private val console: IConsole) :
-    Command(name = "clear", description = "Очистить коллекцию") {
+class Clear(
+    private val rudpClient: IRUDPClient,
+    private val console: IConsole,
+    private val session: UserSession
+) : Command(name = "clear", description = "Очистить коллекцию") {
 
     override fun execute(): ExitCode {
         console.printLine("Использование команды clear")
         try {
-            val response = rudpClient.sendAndReceive(ClearRequest()) as CommandResponse
+            val response = rudpClient.sendAndReceive(ClearRequest(session.login, session.password)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

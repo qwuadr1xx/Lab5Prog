@@ -18,7 +18,8 @@ data class StudyGroup(
     val expelledStudents: Int,
     val averageMark: Long,
     val semesterEnum: Semester? = null,
-    val groupAdmin: Person? = null
+    val groupAdmin: Person? = null,
+    val ownerId: Long?
 ) : Comparable<StudyGroup> {
 
     init {

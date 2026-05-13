@@ -12,7 +12,8 @@ import utils.ExitCode
 @OptIn(ExperimentalSerializationApi::class)
 class SerializationTest {
 
-    // ─── helpers ──────────────────────────────────────────────────────────────
+    private val testLogin = "testUser"
+    private val testPassword = "testPass"
 
     private fun encodeRequest(request: IRequest): ByteArray =
         AppProtoBuf.encodeToByteArray(IRequest.serializer(), request)
@@ -30,7 +31,8 @@ class SerializationTest {
         name = name,
         coordinates = Coordinates(1L, 2.0),
         expelledStudents = 1,
-        averageMark = averageMark
+        averageMark = averageMark,
+        ownerId = null
     )
 
     // ─── StudyGroup ───────────────────────────────────────────────────────────
@@ -53,7 +55,7 @@ class SerializationTest {
     @Test
     fun addRequest_roundtrip_preserves_study_group() {
         val group = minimalGroup(name = "AddGroup")
-        val request = AddRequest(group)
+        val request = AddRequest(group, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is AddRequest)
         assertEquals(group.name, (decoded as AddRequest).studyGroup.name)
@@ -62,7 +64,7 @@ class SerializationTest {
     @Test
     fun addIfMaxRequest_roundtrip() {
         val group = minimalGroup(name = "MaxGroup", averageMark = 99)
-        val request = AddIfMaxRequest(group)
+        val request = AddIfMaxRequest(group, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is AddIfMaxRequest)
         assertEquals(99L, (decoded as AddIfMaxRequest).studyGroup.averageMark)
@@ -70,31 +72,31 @@ class SerializationTest {
 
     @Test
     fun showRequest_roundtrip() {
-        val decoded = decodeRequest(encodeRequest(ShowRequest()))
+        val decoded = decodeRequest(encodeRequest(ShowRequest(testLogin, testPassword)))
         assertTrue(decoded is ShowRequest)
     }
 
     @Test
     fun infoRequest_roundtrip() {
-        val decoded = decodeRequest(encodeRequest(InfoRequest()))
+        val decoded = decodeRequest(encodeRequest(InfoRequest(testLogin, testPassword)))
         assertTrue(decoded is InfoRequest)
     }
 
     @Test
     fun clearRequest_roundtrip() {
-        val decoded = decodeRequest(encodeRequest(ClearRequest()))
+        val decoded = decodeRequest(encodeRequest(ClearRequest(testLogin, testPassword)))
         assertTrue(decoded is ClearRequest)
     }
 
     @Test
     fun removeLastRequest_roundtrip() {
-        val decoded = decodeRequest(encodeRequest(RemoveLastRequest()))
+        val decoded = decodeRequest(encodeRequest(RemoveLastRequest(testLogin, testPassword)))
         assertTrue(decoded is RemoveLastRequest)
     }
 
     @Test
     fun removeByIdRequest_roundtrip_preserves_id() {
-        val request = RemoveByIdRequest(id = 42)
+        val request = RemoveByIdRequest(id = 42, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is RemoveByIdRequest)
         assertEquals(42, (decoded as RemoveByIdRequest).id)
@@ -103,7 +105,7 @@ class SerializationTest {
     @Test
     fun insertAtRequest_roundtrip_preserves_index_and_group() {
         val group = minimalGroup(name = "InsertGroup")
-        val request = InsertAtRequest(index = 3, studyGroup = group)
+        val request = InsertAtRequest(index = 3, studyGroup = group, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is InsertAtRequest)
         val typedDecoded = decoded as InsertAtRequest
@@ -114,7 +116,7 @@ class SerializationTest {
     @Test
     fun updateRequest_roundtrip_preserves_id_and_group() {
         val group = minimalGroup(name = "UpdatedGroup")
-        val request = UpdateRequest(id = 7, studyGroup = group)
+        val request = UpdateRequest(id = 7, studyGroup = group, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is UpdateRequest)
         val typedDecoded = decoded as UpdateRequest
@@ -124,13 +126,13 @@ class SerializationTest {
 
     @Test
     fun averageOfAverageMarkRequest_roundtrip() {
-        val decoded = decodeRequest(encodeRequest(AverageOfAverageMarkRequest()))
+        val decoded = decodeRequest(encodeRequest(AverageOfAverageMarkRequest(testLogin, testPassword)))
         assertTrue(decoded is AverageOfAverageMarkRequest)
     }
 
     @Test
     fun countLessThanAverageMarkRequest_roundtrip_preserves_threshold() {
-        val request = CountLessThanAverageMarkRequest(averageMark = 55)
+        val request = CountLessThanAverageMarkRequest(averageMark = 55, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is CountLessThanAverageMarkRequest)
         assertEquals(55L, (decoded as CountLessThanAverageMarkRequest).averageMark)
@@ -138,7 +140,7 @@ class SerializationTest {
 
     @Test
     fun countGreaterThanAverageMarkRequest_roundtrip_preserves_threshold() {
-        val request = CountGreaterThanAverageMarkRequest(averageMark = 20)
+        val request = CountGreaterThanAverageMarkRequest(averageMark = 20, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is CountGreaterThanAverageMarkRequest)
         assertEquals(20L, (decoded as CountGreaterThanAverageMarkRequest).averageMark)
@@ -146,7 +148,7 @@ class SerializationTest {
 
     @Test
     fun undoRequest_roundtrip_preserves_n() {
-        val request = UndoRequest(n = 3)
+        val request = UndoRequest(n = 3, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is UndoRequest)
         assertEquals(3, (decoded as UndoRequest).n)
@@ -155,7 +157,7 @@ class SerializationTest {
     @Test
     fun executeScriptRequest_roundtrip_preserves_lines() {
         val scriptLines = listOf("add", "TestGroup", "1", "2", "10", "1", "5", "THIRD", "0")
-        val request = ExecuteScriptRequest(scriptLines)
+        val request = ExecuteScriptRequest(scriptLines, testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is ExecuteScriptRequest)
         assertEquals(scriptLines, (decoded as ExecuteScriptRequest).lines)
@@ -163,7 +165,7 @@ class SerializationTest {
 
     @Test
     fun executeScriptRequest_empty_lines_roundtrip() {
-        val request = ExecuteScriptRequest(emptyList())
+        val request = ExecuteScriptRequest(emptyList(), testLogin, testPassword)
         val decoded = decodeRequest(encodeRequest(request))
         assertTrue(decoded is ExecuteScriptRequest)
         assertTrue((decoded as ExecuteScriptRequest).lines.isEmpty())
@@ -202,17 +204,17 @@ class SerializationTest {
     @Test
     fun polymorphic_sealed_dispatch_works_for_all_request_types() {
         val requests: List<IRequest> = listOf(
-            AddRequest(minimalGroup()),
-            ShowRequest(),
-            InfoRequest(),
-            ClearRequest(),
-            RemoveLastRequest(),
-            RemoveByIdRequest(1),
-            AverageOfAverageMarkRequest(),
-            CountLessThanAverageMarkRequest(10),
-            CountGreaterThanAverageMarkRequest(5),
-            UndoRequest(1),
-            ExecuteScriptRequest(listOf("show"))
+            AddRequest(minimalGroup(), testLogin, testPassword),
+            ShowRequest(testLogin, testPassword),
+            InfoRequest(testLogin, testPassword),
+            ClearRequest(testLogin, testPassword),
+            RemoveLastRequest(testLogin, testPassword),
+            RemoveByIdRequest(1, testLogin, testPassword),
+            AverageOfAverageMarkRequest(testLogin, testPassword),
+            CountLessThanAverageMarkRequest(10, testLogin, testPassword),
+            CountGreaterThanAverageMarkRequest(5, testLogin, testPassword),
+            UndoRequest(1, testLogin, testPassword),
+            ExecuteScriptRequest(listOf("show"), testLogin, testPassword)
         )
         requests.forEach { original ->
             val decoded = decodeRequest(encodeRequest(original))

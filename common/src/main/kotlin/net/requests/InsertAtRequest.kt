@@ -8,5 +8,7 @@ import utils.CommandName
 class InsertAtRequest(
     val index: Int,
     val studyGroup: StudyGroup,
+    override val login: String,
+    override val password: String,
     override val commandName: CommandName = CommandName.INSERT_AT
 ) : IRequest

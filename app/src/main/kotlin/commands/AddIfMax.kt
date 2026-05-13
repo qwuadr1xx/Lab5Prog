@@ -5,13 +5,14 @@ import net.responses.CommandResponse
 import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 
 /**
  * Команда add_if_max
  * @author qwuadrixx
  */
-class AddIfMax(private val rudpClient: IRUDPClient, private val console: IConsole) :
+class AddIfMax(private val rudpClient: IRUDPClient, private val console: IConsole, private val session: UserSession) :
     Command(
         name = "add_if_max",
         description = "Добавить новый элемент в коллекцию, если его значение превышает значение наибольшего элемента этой коллекции"
@@ -21,7 +22,7 @@ class AddIfMax(private val rudpClient: IRUDPClient, private val console: IConsol
         console.printLine("Использование команды add_if_max")
         try {
             val studyGroup = StudyGroupAsker(console).ask()
-            val response = rudpClient.sendAndReceive(AddIfMaxRequest(studyGroup)) as CommandResponse
+            val response = rudpClient.sendAndReceive(AddIfMaxRequest(studyGroup, session.login, session.password)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

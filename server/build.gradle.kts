@@ -52,7 +52,7 @@ jooq {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = System.getenv("DB_SCHEMA") ?: "programming"
+                        inputSchema = System.getenv("DB_SCHEMA") ?: "s507981"
                     }
                     generate.apply {
                         isDeprecated = false

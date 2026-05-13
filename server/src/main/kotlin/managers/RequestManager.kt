@@ -1,21 +1,30 @@
 package ru.qwuadrixx.managers
 
+import exception.ExistingLoginException
+import exception.NotFoundException
 import net.requests.*
 import net.responses.CommandResponse
 import net.responses.IResponse
+import org.jooq.exception.DataAccessException
 import org.slf4j.LoggerFactory
+import ru.qwuadrixx.client.CollectionSyncNotifier
 import ru.qwuadrixx.commands.*
 import ru.qwuadrixx.parsers.LineReader
 import ru.qwuadrixx.parsers.StudyGroupParser
+import ru.qwuadrixx.repository.IHistoryRepository
 import utils.CommandName
 import utils.ExitCode
 
+private val NO_AUTH_COMMANDS = setOf(CommandName.LOGIN, CommandName.REGISTER)
+
 class RequestManager(
-    private val cm: ICollectionManager
+    private val cm: ICollectionManager,
+    private val historyRepo: IHistoryRepository,
+    private val userManager: IUserManager,
+    private val syncNotifier: CollectionSyncNotifier
 ) : IRequestManager {
 
     private val logger = LoggerFactory.getLogger(RequestManager::class.java)
-    private val history: ArrayDeque<ServerCommand> = ArrayDeque()
     private val commandFactories: Map<CommandName, () -> ServerCommand> = mapOf(
         CommandName.ADD to { AddCommand(cm) },
         CommandName.ADD_IF_MAX to { AddIfMaxCommand(cm) },
@@ -29,92 +38,123 @@ class RequestManager(
         CommandName.AVERAGE_OF_AVERAGE_MARK to { AverageOfAverageMarkCommand(cm) },
         CommandName.COUNT_GREATER_THAN_AVERAGE_MARK to { CountGreaterThanAverageMarkCommand(cm) },
         CommandName.COUNT_LESS_THAN_AVERAGE_MARK to { CountLessThanAverageMarkCommand(cm) },
-        CommandName.UNDO to { UndoCommand(history) }
+        CommandName.UNDO to { UndoCommand(historyRepo, cm, syncNotifier) },
+        CommandName.LOGIN to { LoginCommand(userManager) },
+        CommandName.REGISTER to { RegisterCommand(userManager) }
     )
 
     override fun dispatch(request: IRequest): IResponse =
-        if (request is ExecuteScriptRequest) executeScript(request.lines)
+        if (request is ExecuteScriptRequest) executeScript(request)
         else executeSingleCommand(request)
 
     private fun executeSingleCommand(request: IRequest): IResponse {
         logger.info("Выполняется команда: {}", request.commandName)
         return try {
+            if (request.commandName !in NO_AUTH_COMMANDS) {
+                userManager.verify(request.login, request.password)
+            }
             val factory = commandFactories[request.commandName]
                 ?: return CommandResponse(ExitCode.ERROR, "Неизвестная команда: ${request.commandName}").also {
                     logger.warn("Неизвестная команда: {}", request.commandName)
                 }
             val command = factory()
+            val snapshotBefore = if (command.isUndoable && !cm.scriptMode) cm.takeSnapshot() else null
             val response = command.execute(request)
-            if (response.exitCode == ExitCode.OK && command.isUndoable) {
-                history.addLast(command)
+            if (snapshotBefore != null && response.exitCode == ExitCode.OK) {
+                historyRepo.push(snapshotBefore, request.login)
             }
             logger.info("Команда {} завершена со статусом {}", request.commandName, response.exitCode)
             response
+        } catch (e: SecurityException) {
+            logger.warn("Ошибка авторизации для команды {}: {}", request.commandName, e.message)
+            CommandResponse(ExitCode.ERROR, "Ошибка авторизации: ${e.message}")
+        } catch (e: NoSuchElementException) {
+            logger.warn("Элемент не найден при выполнении {}: {}", request.commandName, e.message)
+            CommandResponse(ExitCode.ERROR, "Не найдено: ${e.message}")
+        } catch (e: NotFoundException) {
+            logger.warn("Элемент не найден при выполнении {}: {}", request.commandName, e.message)
+            CommandResponse(ExitCode.ERROR, "Не найдено: ${e.message}")
+        } catch (e: ExistingLoginException) {
+            logger.warn("Конфликт при выполнении {}: {}", request.commandName, e.message)
+            CommandResponse(ExitCode.ERROR, e.message ?: "Пользователь уже существует")
+        } catch (e: DataAccessException) {
+            val cause = e.cause
+            logger.warn("Ошибка БД при выполнении {}: {}", request.commandName, cause?.message ?: e.message)
+            when (cause) {
+                is SecurityException -> CommandResponse(ExitCode.ERROR, "Ошибка авторизации: ${cause.message}")
+                is NoSuchElementException -> CommandResponse(ExitCode.ERROR, "Не найдено: ${cause.message}")
+                is NotFoundException -> CommandResponse(ExitCode.ERROR, "Не найдено: ${cause.message}")
+                is ExistingLoginException -> CommandResponse(ExitCode.ERROR, cause.message ?: "Пользователь уже существует")
+                else -> CommandResponse(ExitCode.ERROR, cause?.message ?: e.message ?: "Ошибка базы данных")
+            }
         } catch (e: Exception) {
             logger.error("Ошибка при выполнении команды {}: {}", request.commandName, e.message, e)
             CommandResponse(ExitCode.ERROR, "Ошибка: ${e.message}")
         }
     }
 
-    private fun executeScript(lines: List<String>): IResponse {
-        val collectionSnapshot = cm.takeSnapshot()
-        val historySnapshot = history.toList()
-
-        logger.info("Начало транзакционного выполнения скрипта ({} строк)", lines.size)
+    private fun executeScript(request: ExecuteScriptRequest): IResponse {
+        val snapshot = cm.takeSnapshot()
+        cm.scriptMode = true
+        logger.info("Начало выполнения скрипта с отложенной записью ({} строк)", request.lines.size)
         val results = mutableListOf<String>()
 
-        val reader = LineReader(lines)
-        while (reader.hasNext()) {
-            val commandName = reader.readLine()
-            if (commandName.isEmpty()) continue
+        try {
+            val reader = LineReader(request.lines)
+            while (reader.hasNext()) {
+                val commandName = reader.readLine()
+                if (commandName.isEmpty()) continue
 
-            val request = try {
-                parseScriptCommand(commandName, reader)
-            } catch (e: Exception) {
-                logger.warn("Ошибка разбора команды '{}': {}", commandName, e.message)
-                cm.restoreSnapshot(collectionSnapshot)
-                history.clear()
-                history.addAll(historySnapshot)
-                return CommandResponse(
-                    ExitCode.ERROR,
-                    "Скрипт откатан: ошибка разбора команды '$commandName': ${e.message}"
-                )
-            } ?: continue
+                val scriptRequest = try {
+                    parseScriptCommand(commandName, reader, request.login, request.password)
+                } catch (e: Exception) {
+                    logger.warn("Ошибка разбора команды '{}': {}", commandName, e.message)
+                    cm.scriptMode = false
+                    cm.restoreSnapshot(snapshot)
+                    return CommandResponse(ExitCode.ERROR, "Скрипт откатан: ошибка разбора '$commandName': ${e.message}")
+                } ?: continue
 
-            val response = executeSingleCommand(request)
-            if (response.exitCode == ExitCode.ERROR) {
-                cm.restoreSnapshot(collectionSnapshot)
-                history.clear()
-                history.addAll(historySnapshot)
-                logger.warn("Скрипт откатан: ошибка в команде {}", request.commandName)
-                return CommandResponse(
-                    ExitCode.ERROR,
-                    "Скрипт прерван и откатан: ${(response as CommandResponse).message}"
-                )
+                val response = executeSingleCommand(scriptRequest)
+                if (response.exitCode == ExitCode.ERROR) {
+                    logger.warn("Скрипт откатан: ошибка в команде {}", scriptRequest.commandName)
+                    cm.scriptMode = false
+                    cm.restoreSnapshot(snapshot)
+                    return CommandResponse(ExitCode.ERROR, "Скрипт прерван и откатан: ${(response as CommandResponse).message}")
+                }
+                (response as? CommandResponse)?.message?.takeIf { it.isNotEmpty() }?.let { results.add(it) }
             }
-            (response as? CommandResponse)?.message?.takeIf { it.isNotEmpty() }?.let { results.add(it) }
-        }
 
-        logger.info("Скрипт выполнен успешно")
-        return CommandResponse(ExitCode.OK, results.joinToString("\n"))
+            cm.scriptMode = false
+            cm.applyScriptDiff(snapshot, request.login, request.password)
+            historyRepo.push(snapshot, request.login)
+            logger.info("Скрипт выполнен успешно, изменения записаны в БД")
+            return CommandResponse(ExitCode.OK, results.joinToString("\n"))
+        } catch (e: Exception) {
+            logger.error("Необработанная ошибка в скрипте: {}", e.message, e)
+            cm.scriptMode = false
+            cm.restoreSnapshot(snapshot)
+            return CommandResponse(ExitCode.ERROR, "Скрипт прерван: ${e.message}")
+        }
     }
 
-    private fun parseScriptCommand(commandName: String, reader: LineReader): IRequest? = when (commandName) {
-        "add" -> AddRequest(StudyGroupParser.parse(reader))
-        "add_if_max" -> AddIfMaxRequest(StudyGroupParser.parse(reader))
-        "show" -> ShowRequest()
-        "info" -> InfoRequest()
-        "clear" -> ClearRequest()
-        "remove_last" -> RemoveLastRequest()
-        "average_of_average_mark" -> AverageOfAverageMarkRequest()
-        "remove_by_id" -> RemoveByIdRequest(reader.readLine().toInt())
-        "insert_at" -> InsertAtRequest(reader.readLine().toInt(), StudyGroupParser.parse(reader))
-        "update" -> {
-            val id = reader.readLine().toInt(); UpdateRequest(id, StudyGroupParser.parse(reader, id))
+    private fun parseScriptCommand(commandName: String, reader: LineReader, login: String, password: String): IRequest? =
+        when (commandName) {
+            "add" -> AddRequest(StudyGroupParser.parse(reader), login, password)
+            "add_if_max" -> AddIfMaxRequest(StudyGroupParser.parse(reader), login, password)
+            "show" -> ShowRequest(login, password)
+            "info" -> InfoRequest(login, password)
+            "clear" -> ClearRequest(login, password)
+            "remove_last" -> RemoveLastRequest(login, password)
+            "average_of_average_mark" -> AverageOfAverageMarkRequest(login, password)
+            "remove_by_id" -> RemoveByIdRequest(reader.readLine().toInt(), login, password)
+            "insert_at" -> InsertAtRequest(reader.readLine().toInt(), StudyGroupParser.parse(reader), login, password)
+            "update" -> {
+                val id = reader.readLine().toInt()
+                UpdateRequest(id, StudyGroupParser.parse(reader, id), login, password)
+            }
+            "count_greater_than_average_mark" -> CountGreaterThanAverageMarkRequest(reader.readLine().toLong(), login, password)
+            "count_less_than_average_mark" -> CountLessThanAverageMarkRequest(reader.readLine().toLong(), login, password)
+            "undo" -> UndoRequest(reader.readLine().toInt(), login, password)
+            else -> null
         }
-        "count_greater_than_average_mark" -> CountGreaterThanAverageMarkRequest(reader.readLine().toLong())
-        "count_less_than_average_mark" -> CountLessThanAverageMarkRequest(reader.readLine().toLong())
-        "undo" -> UndoRequest(reader.readLine().toInt())
-        else -> null
-    }
 }

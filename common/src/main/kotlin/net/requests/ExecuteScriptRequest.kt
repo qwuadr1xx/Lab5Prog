@@ -6,5 +6,7 @@ import utils.CommandName
 @Serializable
 class ExecuteScriptRequest(
     val lines: List<String>,
+    override val login: String,
+    override val password: String,
     override val commandName: CommandName = CommandName.EXECUTE_SCRIPT
 ) : IRequest

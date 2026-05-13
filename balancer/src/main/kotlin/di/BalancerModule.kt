@@ -42,17 +42,6 @@ fun loadBalancerConfig(): BalancerConfig {
 val balancerModule = module {
     single { loadBalancerConfig() }
     single { get<BalancerConfig>().servers.map { ServerNode(it.host, it.port) } }
-    single {
-        val config = get<BalancerConfig>()
-        NodeHealthChecker(
-            nodes = get(),
-            healthPortOffset = config.healthPortOffset,
-            intervalMs = config.healthCheckIntervalMs,
-            timeoutMs = config.socketTimeoutMs
-        )
-    }
-    single {
-        val config = get<BalancerConfig>()
-        RUDPBalancer(config.port, get(), config.maxRetries, config.socketTimeoutMs, config.pingTimeoutMs)
-    }
+    single { NodeHealthChecker(get()) }
+    single { RUDPBalancer(get()) }
 }

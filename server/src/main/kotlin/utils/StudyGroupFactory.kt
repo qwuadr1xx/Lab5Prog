@@ -11,7 +11,7 @@ object StudyGroupFactory {
 
     private val seq = AtomicInteger(0)
 
-    fun nextId(): Int = seq.incrementAndGet()
+    private fun nextId(): Int = seq.incrementAndGet()
 
     fun syncIdGenerator(maxExistingId: Int) {
         seq.updateAndGet { current -> maxOf(current, maxExistingId) }

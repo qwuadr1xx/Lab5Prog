@@ -2,3 +2,7 @@ port: 9090
 maxRetries: 3
 socketTimeoutMs: 3000
 healthPortOffset: 1000
+syncPortOffset: 2000
+fixedPoolSize: 4
+peers:
+  - "localhost:9091"

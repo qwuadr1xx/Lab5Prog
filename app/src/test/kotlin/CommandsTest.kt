@@ -17,6 +17,7 @@ import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.commands.*
 import ru.qwuadrixx.app.managers.CommandManager
 import ru.qwuadrixx.app.managers.ICommandManager
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -39,24 +40,25 @@ internal class CommandsTest {
         console = TestConsole()
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, ""))
         commandManager = CommandManager()
+        val session = UserSession()
 
         commandManager.apply {
-            register(Add(mockClient, console))
-            register(AddIfMax(mockClient, console))
-            register(Show(mockClient, console))
-            register(AverageOfAverageMark(mockClient, console))
-            register(Clear(mockClient, console))
-            register(CountLessThanAverageMark(mockClient, console))
-            register(CountGreaterThanAverageMark(mockClient, console))
-            register(ExecuteScript(mockClient, console))
+            register(Add(mockClient, console, session))
+            register(AddIfMax(mockClient, console, session))
+            register(Show(mockClient, console, session))
+            register(AverageOfAverageMark(mockClient, console, session))
+            register(Clear(mockClient, console, session))
+            register(CountLessThanAverageMark(mockClient, console, session))
+            register(CountGreaterThanAverageMark(mockClient, console, session))
+            register(ExecuteScript(mockClient, console, session))
             register(Exit(console))
             register(Help(console, this))
-            register(Info(mockClient, console))
-            register(InsertAt(mockClient, console))
-            register(RemoveById(mockClient, console))
-            register(RemoveLast(mockClient, console))
-            register(Update(mockClient, console))
-            register(Undo(mockClient, console))
+            register(Info(mockClient, console, session))
+            register(InsertAt(mockClient, console, session))
+            register(RemoveById(mockClient, console, session))
+            register(RemoveLast(mockClient, console, session))
+            register(Update(mockClient, console, session))
+            register(Undo(mockClient, console, session))
         }
     }
 
@@ -87,7 +89,7 @@ internal class CommandsTest {
     fun show_should_send_show_request_and_return_ok() {
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, "Group1\nGroup2"))
         commandManager = CommandManager()
-        commandManager.register(Show(mockClient, console))
+        commandManager.register(Show(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("show").execute()
 
@@ -107,7 +109,7 @@ internal class CommandsTest {
     fun info_should_send_info_request_and_return_ok() {
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, "Тип коллекции: Vector"))
         commandManager = CommandManager()
-        commandManager.register(Info(mockClient, console))
+        commandManager.register(Info(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("info").execute()
 
@@ -165,7 +167,7 @@ internal class CommandsTest {
     fun average_of_average_mark_should_send_request() {
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, "42"))
         commandManager = CommandManager()
-        commandManager.register(AverageOfAverageMark(mockClient, console))
+        commandManager.register(AverageOfAverageMark(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("average_of_average_mark").execute()
 
@@ -180,7 +182,7 @@ internal class CommandsTest {
         console.reader = BufferedReader(InputStreamReader("100\n".byteInputStream()))
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, "3"))
         commandManager = CommandManager()
-        commandManager.register(CountLessThanAverageMark(mockClient, console))
+        commandManager.register(CountLessThanAverageMark(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("count_less_than_average_mark").execute()
 
@@ -193,7 +195,7 @@ internal class CommandsTest {
         console.reader = BufferedReader(InputStreamReader("5\n".byteInputStream()))
         mockClient = MockRUDPClient(CommandResponse(ExitCode.OK, "2"))
         commandManager = CommandManager()
-        commandManager.register(CountGreaterThanAverageMark(mockClient, console))
+        commandManager.register(CountGreaterThanAverageMark(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("count_greater_than_average_mark").execute()
 
@@ -205,7 +207,7 @@ internal class CommandsTest {
     fun command_should_return_error_when_server_returns_error() {
         mockClient = MockRUDPClient(CommandResponse(ExitCode.ERROR, "Что-то пошло не так"))
         commandManager = CommandManager()
-        commandManager.register(Clear(mockClient, console))
+        commandManager.register(Clear(mockClient, console, UserSession()))
 
         val exitCode = commandManager.getCommand("clear").execute()
 
