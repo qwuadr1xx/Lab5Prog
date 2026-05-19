@@ -12,22 +12,13 @@ import ru.qwuadrixx.generated.enums.Semester as GeneratedSemester
 import ru.qwuadrixx.generated.tables.references.COORDINATES
 import ru.qwuadrixx.generated.tables.references.PERSON
 import ru.qwuadrixx.generated.tables.references.STUDY_GROUP
-import ru.qwuadrixx.generated.tables.references.USERS
 import ru.qwuadrixx.mapper.StudyGroupMapper
-import ru.qwuadrixx.utils.hashPassword
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
 
     override val dslContext: DSLContext by inject()
-
-    private fun verifyAndGetCreatorId(ctx: DSLContext, login: String, password: String): Long =
-        ctx.select(USERS.ID)
-            .from(USERS)
-            .where(USERS.LOGIN.eq(login).and(USERS.PASSWORD_HASH.eq(hashPassword(password))))
-            .fetchOptional { it.get(USERS.ID) }
-            .orElseThrow { NotFoundException("Пользователь $login не найден.") }!!
 
     private fun insertCoordinates(ctx: DSLContext, coordinates: Coordinates): Long =
         ctx.insertInto(COORDINATES)
@@ -93,20 +84,18 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
                 StudyGroupMapper.toDto(group, coords, person)
             }
 
-    override fun add(studyGroup: StudyGroup, login: String, password: String): StudyGroup =
+    override fun add(studyGroup: StudyGroup, userId: Long): StudyGroup =
         dslContext.transactionResult { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
             val coordId = insertCoordinates(ctx, studyGroup.coordinates)
             val adminId = insertPerson(ctx, studyGroup.groupAdmin)
-            val newId = doInsert(ctx, studyGroup, coordId, adminId, creatorId, nextPlace(ctx))
+            val newId = doInsert(ctx, studyGroup, coordId, adminId, userId, nextPlace(ctx))
             fetchById(ctx, newId)
         }
 
-    override fun addIfMax(studyGroup: StudyGroup, login: String, password: String): StudyGroup? =
+    override fun addIfMax(studyGroup: StudyGroup, userId: Long): StudyGroup? =
         dslContext.transactionResult { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             val maxRecord = ctx.selectFrom(STUDY_GROUP)
                 .orderBy(STUDY_GROUP.NAME.desc(), STUDY_GROUP.AVERAGE_MARK.desc(), STUDY_GROUP.EXPELLED_STUDENTS.desc())
@@ -123,14 +112,13 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
 
             val coordId = insertCoordinates(ctx, studyGroup.coordinates)
             val adminId = insertPerson(ctx, studyGroup.groupAdmin)
-            val newId = doInsert(ctx, studyGroup, coordId, adminId, creatorId, nextPlace(ctx))
+            val newId = doInsert(ctx, studyGroup, coordId, adminId, userId, nextPlace(ctx))
             fetchById(ctx, newId)
         }
 
-    override fun insertAt(index: Int, studyGroup: StudyGroup, login: String, password: String): StudyGroup =
+    override fun insertAt(index: Int, studyGroup: StudyGroup, userId: Long): StudyGroup =
         dslContext.transactionResult { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             ctx.update(STUDY_GROUP)
                 .set(STUDY_GROUP.PLACE, STUDY_GROUP.PLACE.add(1))
@@ -139,20 +127,19 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
 
             val coordId = insertCoordinates(ctx, studyGroup.coordinates)
             val adminId = insertPerson(ctx, studyGroup.groupAdmin)
-            val newId = doInsert(ctx, studyGroup, coordId, adminId, creatorId, index.toLong())
+            val newId = doInsert(ctx, studyGroup, coordId, adminId, userId, index.toLong())
 
             ctx.execute("SELECT setval('study_group_place_seq', (SELECT MAX(place) FROM study_group))")
 
             fetchById(ctx, newId)
         }
 
-    override fun updateById(id: Int, studyGroup: StudyGroup, login: String, password: String): StudyGroup =
+    override fun updateById(id: Int, studyGroup: StudyGroup, userId: Long): StudyGroup =
         dslContext.transactionResult { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             val existing = ctx.selectFrom(STUDY_GROUP)
-                .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(creatorId)))
+                .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(userId)))
                 .fetchOptional()
                 .orElseThrow { NotFoundException("StudyGroup с id $id не найден или нет прав.") }
 
@@ -202,13 +189,12 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
             fetchById(ctx, id.toLong())
         }
 
-    override fun removeById(id: Int, login: String, password: String) {
+    override fun removeById(id: Int, userId: Long) {
         dslContext.transaction { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             val existing = ctx.selectFrom(STUDY_GROUP)
-                .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(creatorId)))
+                .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(userId)))
                 .fetchOptional()
                 .orElseThrow { NotFoundException("StudyGroup с id $id не найден или нет прав.") }
 
@@ -218,10 +204,9 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
         }
     }
 
-    override fun removeLast(login: String, password: String) {
+    override fun removeLast(userId: Long) {
         dslContext.transaction { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             val last = ctx.selectFrom(STUDY_GROUP)
                 .orderBy(STUDY_GROUP.PLACE.desc())
@@ -229,7 +214,7 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
                 .forUpdate()
                 .fetchOne() ?: throw NoSuchElementException("Коллекция пуста")
 
-            if (last.creatorId != creatorId) throw SecurityException("Нет прав на удаление последнего элемента")
+            if (last.creatorId != userId) throw SecurityException("Нет прав на удаление последнего элемента")
 
             last.adminId?.let { ctx.deleteFrom(PERSON).where(PERSON.ID.eq(it)).execute() }
             ctx.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.ID.eq(last.id)).execute()
@@ -237,19 +222,18 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
         }
     }
 
-    override fun clear(login: String, password: String) {
+    override fun clear(userId: Long) {
         dslContext.transaction { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             val groups = ctx.selectFrom(STUDY_GROUP)
-                .where(STUDY_GROUP.CREATOR_ID.eq(creatorId))
+                .where(STUDY_GROUP.CREATOR_ID.eq(userId))
                 .fetch()
 
             val coordinateIds = groups.mapNotNull { it.coordinatesId }
             val adminIds = groups.mapNotNull { it.adminId }
 
-            ctx.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(creatorId)).execute()
+            ctx.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(userId)).execute()
             if (adminIds.isNotEmpty()) ctx.deleteFrom(PERSON).where(PERSON.ID.`in`(adminIds)).execute()
             if (coordinateIds.isNotEmpty()) ctx.deleteFrom(COORDINATES).where(COORDINATES.ID.`in`(coordinateIds)).execute()
         }
@@ -259,16 +243,14 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
         added: List<StudyGroup>,
         removedIds: List<Int>,
         updated: List<StudyGroup>,
-        login: String,
-        password: String
+        userId: Long
     ) {
         dslContext.transaction { config ->
             val ctx = DSL.using(config)
-            val creatorId = verifyAndGetCreatorId(ctx, login, password)
 
             for (id in removedIds) {
                 val existing = ctx.selectFrom(STUDY_GROUP)
-                    .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(creatorId)))
+                    .where(STUDY_GROUP.ID.eq(id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(userId)))
                     .fetchOne() ?: continue
                 existing.adminId?.let { ctx.deleteFrom(PERSON).where(PERSON.ID.eq(it)).execute() }
                 ctx.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.ID.eq(id.toLong())).execute()
@@ -277,7 +259,7 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
 
             for (sg in updated) {
                 val existing = ctx.selectFrom(STUDY_GROUP)
-                    .where(STUDY_GROUP.ID.eq(sg.id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(creatorId)))
+                    .where(STUDY_GROUP.ID.eq(sg.id.toLong()).and(STUDY_GROUP.CREATOR_ID.eq(userId)))
                     .fetchOne() ?: continue
 
                 ctx.update(COORDINATES)
@@ -324,7 +306,7 @@ class StudyGroupRepository : KoinComponent, IStudyGroupRepository {
             for (sg in added) {
                 val coordId = insertCoordinates(ctx, sg.coordinates)
                 val adminId = insertPerson(ctx, sg.groupAdmin)
-                doInsert(ctx, sg, coordId, adminId, creatorId, nextPlace(ctx))
+                doInsert(ctx, sg, coordId, adminId, userId, nextPlace(ctx))
             }
         }
     }

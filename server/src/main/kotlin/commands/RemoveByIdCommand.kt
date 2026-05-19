@@ -10,9 +10,9 @@ import utils.ExitCode
 class RemoveByIdCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as RemoveByIdRequest
-        cm.removeById(request.id, request.login, request.password)
+        cm.removeById(request.id, userId)
         return CommandResponse(ExitCode.OK, "Элемент с id ${request.id} удалён")
     }
 }

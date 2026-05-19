@@ -10,9 +10,9 @@ import utils.ExitCode
 class AddIfMaxCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as AddIfMaxRequest
-        val added = cm.addIfMax(request.studyGroup, request.login, request.password)
+        val added = cm.addIfMax(request.studyGroup, userId)
         return if (added)
             CommandResponse(ExitCode.OK, "Элемент добавлен в коллекцию")
         else

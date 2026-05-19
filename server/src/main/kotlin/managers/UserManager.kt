@@ -12,10 +12,6 @@ class UserManager : KoinComponent, IUserManager {
     override fun register(login: String, password: String): Long =
         userRepo.register(login, hashPassword(password))
 
-    override fun login(login: String, password: String): Long =
+    override fun login(login: String, password: String): UserInfo =
         userRepo.login(login, hashPassword(password))
-
-    override fun verify(login: String, password: String) {
-        userRepo.login(login, hashPassword(password))
-    }
 }

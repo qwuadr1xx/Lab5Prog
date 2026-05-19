@@ -22,7 +22,7 @@ class AddIfMax(private val rudpClient: IRUDPClient, private val console: IConsol
         console.printLine("Использование команды add_if_max")
         try {
             val studyGroup = StudyGroupAsker(console).ask()
-            val response = rudpClient.sendAndReceive(AddIfMaxRequest(studyGroup, session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(AddIfMaxRequest(studyGroup, session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

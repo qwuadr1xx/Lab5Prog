@@ -16,7 +16,7 @@ class Show(
     override fun execute(): ExitCode {
         console.printLine("Использование команды show")
         try {
-            val response = rudpClient.sendAndReceive(ShowRequest(session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(ShowRequest(session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

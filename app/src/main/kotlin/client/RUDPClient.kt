@@ -28,4 +28,8 @@ class RUDPClient(assembler: IAssembler) : KoinComponent, IRUDPClient {
         sender.sendPackets(packets)
         return receiver.receiveResponse()
     }
+
+    override fun close() {
+        datagramChannel.close()
+    }
 }

@@ -24,7 +24,7 @@ class CountLessThanAverageMark(private val rudpClient: IRUDPClient, private val 
                 console.printLine("Введите среднюю оценку:")
                 val averageMark = console.readLine().toLong()
                 val response = rudpClient.sendAndReceive(
-                    CountLessThanAverageMarkRequest(averageMark, session.login, session.password)
+                    CountLessThanAverageMarkRequest(averageMark, session.token)
                 ) as CommandResponse
                 if (response.message.isNotEmpty()) console.printObject(response.message)
                 return response.exitCode

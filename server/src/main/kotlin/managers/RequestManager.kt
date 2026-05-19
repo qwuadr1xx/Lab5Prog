@@ -7,11 +7,11 @@ import net.responses.CommandResponse
 import net.responses.IResponse
 import org.jooq.exception.DataAccessException
 import org.slf4j.LoggerFactory
-import ru.qwuadrixx.client.CollectionSyncNotifier
 import ru.qwuadrixx.commands.*
 import ru.qwuadrixx.parsers.LineReader
 import ru.qwuadrixx.parsers.StudyGroupParser
 import ru.qwuadrixx.repository.IHistoryRepository
+import ru.qwuadrixx.service.TokenService
 import utils.CommandName
 import utils.ExitCode
 
@@ -21,7 +21,7 @@ class RequestManager(
     private val cm: ICollectionManager,
     private val historyRepo: IHistoryRepository,
     private val userManager: IUserManager,
-    private val syncNotifier: CollectionSyncNotifier
+    private val tokenService: TokenService
 ) : IRequestManager {
 
     private val logger = LoggerFactory.getLogger(RequestManager::class.java)
@@ -38,9 +38,9 @@ class RequestManager(
         CommandName.AVERAGE_OF_AVERAGE_MARK to { AverageOfAverageMarkCommand(cm) },
         CommandName.COUNT_GREATER_THAN_AVERAGE_MARK to { CountGreaterThanAverageMarkCommand(cm) },
         CommandName.COUNT_LESS_THAN_AVERAGE_MARK to { CountLessThanAverageMarkCommand(cm) },
-        CommandName.UNDO to { UndoCommand(historyRepo, cm, syncNotifier) },
-        CommandName.LOGIN to { LoginCommand(userManager) },
-        CommandName.REGISTER to { RegisterCommand(userManager) }
+        CommandName.UNDO to { UndoCommand(historyRepo, cm) },
+        CommandName.LOGIN to { LoginCommand(userManager, tokenService) },
+        CommandName.REGISTER to { RegisterCommand(userManager, tokenService) }
     )
 
     override fun dispatch(request: IRequest): IResponse =
@@ -50,8 +50,10 @@ class RequestManager(
     private fun executeSingleCommand(request: IRequest): IResponse {
         logger.info("Выполняется команда: {}", request.commandName)
         return try {
-            if (request.commandName !in NO_AUTH_COMMANDS) {
-                userManager.verify(request.login, request.password)
+            val userId: Long = if (request.commandName !in NO_AUTH_COMMANDS) {
+                tokenService.validate(request.token).userId
+            } else {
+                -1L
             }
             val factory = commandFactories[request.commandName]
                 ?: return CommandResponse(ExitCode.ERROR, "Неизвестная команда: ${request.commandName}").also {
@@ -59,9 +61,9 @@ class RequestManager(
                 }
             val command = factory()
             val snapshotBefore = if (command.isUndoable && !cm.scriptMode) cm.takeSnapshot() else null
-            val response = command.execute(request)
+            val response = command.execute(request, userId)
             if (snapshotBefore != null && response.exitCode == ExitCode.OK) {
-                historyRepo.push(snapshotBefore, request.login)
+                historyRepo.push(snapshotBefore, userId)
             }
             logger.info("Команда {} завершена со статусом {}", request.commandName, response.exitCode)
             response
@@ -100,13 +102,15 @@ class RequestManager(
         val results = mutableListOf<String>()
 
         try {
+            val userId = tokenService.validate(request.token).userId
+
             val reader = LineReader(request.lines)
             while (reader.hasNext()) {
                 val commandName = reader.readLine()
                 if (commandName.isEmpty()) continue
 
                 val scriptRequest = try {
-                    parseScriptCommand(commandName, reader, request.login, request.password)
+                    parseScriptCommand(commandName, reader, request.token)
                 } catch (e: Exception) {
                     logger.warn("Ошибка разбора команды '{}': {}", commandName, e.message)
                     cm.scriptMode = false
@@ -125,8 +129,8 @@ class RequestManager(
             }
 
             cm.scriptMode = false
-            cm.applyScriptDiff(snapshot, request.login, request.password)
-            historyRepo.push(snapshot, request.login)
+            cm.applyScriptDiff(snapshot, userId)
+            historyRepo.push(snapshot, userId)
             logger.info("Скрипт выполнен успешно, изменения записаны в БД")
             return CommandResponse(ExitCode.OK, results.joinToString("\n"))
         } catch (e: Exception) {
@@ -137,24 +141,24 @@ class RequestManager(
         }
     }
 
-    private fun parseScriptCommand(commandName: String, reader: LineReader, login: String, password: String): IRequest? =
+    private fun parseScriptCommand(commandName: String, reader: LineReader, token: String): IRequest? =
         when (commandName) {
-            "add" -> AddRequest(StudyGroupParser.parse(reader), login, password)
-            "add_if_max" -> AddIfMaxRequest(StudyGroupParser.parse(reader), login, password)
-            "show" -> ShowRequest(login, password)
-            "info" -> InfoRequest(login, password)
-            "clear" -> ClearRequest(login, password)
-            "remove_last" -> RemoveLastRequest(login, password)
-            "average_of_average_mark" -> AverageOfAverageMarkRequest(login, password)
-            "remove_by_id" -> RemoveByIdRequest(reader.readLine().toInt(), login, password)
-            "insert_at" -> InsertAtRequest(reader.readLine().toInt(), StudyGroupParser.parse(reader), login, password)
+            "add" -> AddRequest(StudyGroupParser.parse(reader), token)
+            "add_if_max" -> AddIfMaxRequest(StudyGroupParser.parse(reader), token)
+            "show" -> ShowRequest(token)
+            "info" -> InfoRequest(token)
+            "clear" -> ClearRequest(token)
+            "remove_last" -> RemoveLastRequest(token)
+            "average_of_average_mark" -> AverageOfAverageMarkRequest(token)
+            "remove_by_id" -> RemoveByIdRequest(reader.readLine().toInt(), token)
+            "insert_at" -> InsertAtRequest(reader.readLine().toInt(), StudyGroupParser.parse(reader), token)
             "update" -> {
                 val id = reader.readLine().toInt()
-                UpdateRequest(id, StudyGroupParser.parse(reader, id), login, password)
+                UpdateRequest(id, StudyGroupParser.parse(reader, id), token)
             }
-            "count_greater_than_average_mark" -> CountGreaterThanAverageMarkRequest(reader.readLine().toLong(), login, password)
-            "count_less_than_average_mark" -> CountLessThanAverageMarkRequest(reader.readLine().toLong(), login, password)
-            "undo" -> UndoRequest(reader.readLine().toInt(), login, password)
+            "count_greater_than_average_mark" -> CountGreaterThanAverageMarkRequest(reader.readLine().toLong(), token)
+            "count_less_than_average_mark" -> CountLessThanAverageMarkRequest(reader.readLine().toLong(), token)
+            "undo" -> UndoRequest(reader.readLine().toInt(), token)
             else -> null
         }
 }

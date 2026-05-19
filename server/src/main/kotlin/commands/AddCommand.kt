@@ -10,9 +10,9 @@ import utils.ExitCode
 class AddCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as AddRequest
-        cm.add(request.studyGroup, request.login, request.password)
+        cm.add(request.studyGroup, userId)
         return CommandResponse(ExitCode.OK, "Элемент добавлен")
     }
 }

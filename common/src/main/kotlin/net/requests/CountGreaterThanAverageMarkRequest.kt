@@ -6,7 +6,6 @@ import utils.CommandName
 @Serializable
 class CountGreaterThanAverageMarkRequest(
     val averageMark: Long,
-    override val login: String,
-    override val password: String,
+    override val token: String,
     override val commandName: CommandName = CommandName.COUNT_GREATER_THAN_AVERAGE_MARK
 ) : IRequest

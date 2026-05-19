@@ -25,7 +25,7 @@ class Login(
             if (response.message.isNotEmpty()) console.printObject(response.message)
 
             if (response.exitCode == ExitCode.OK) {
-                session.set(login, password)
+                session.set(login, response.token)
                 console.printLine("Вы вошли как: $login")
             }
             return response.exitCode

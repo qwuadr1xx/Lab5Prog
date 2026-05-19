@@ -21,7 +21,7 @@ class RemoveById(
                 console.printLine("Введите id(больше 0):")
                 val id = console.readLine().toInt()
                 ensure(id > 0) { "Значение id должно быть больше 0" }
-                val response = rudpClient.sendAndReceive(RemoveByIdRequest(id, session.login, session.password)) as CommandResponse
+                val response = rudpClient.sendAndReceive(RemoveByIdRequest(id, session.token)) as CommandResponse
                 if (response.message.isNotEmpty()) console.printObject(response.message)
                 return response.exitCode
             } catch (e: Exception) {

@@ -7,18 +7,17 @@ interface IStudyGroupRepository {
     val dslContext: DSLContext
 
     fun findAll(): List<StudyGroup>
-    fun add(studyGroup: StudyGroup, login: String, password: String): StudyGroup
-    fun addIfMax(studyGroup: StudyGroup, login: String, password: String): StudyGroup?
-    fun insertAt(index: Int, studyGroup: StudyGroup, login: String, password: String): StudyGroup
-    fun updateById(id: Int, studyGroup: StudyGroup, login: String, password: String): StudyGroup
-    fun removeById(id: Int, login: String, password: String)
-    fun removeLast(login: String, password: String)
-    fun clear(login: String, password: String)
+    fun add(studyGroup: StudyGroup, userId: Long): StudyGroup
+    fun addIfMax(studyGroup: StudyGroup, userId: Long): StudyGroup?
+    fun insertAt(index: Int, studyGroup: StudyGroup, userId: Long): StudyGroup
+    fun updateById(id: Int, studyGroup: StudyGroup, userId: Long): StudyGroup
+    fun removeById(id: Int, userId: Long)
+    fun removeLast(userId: Long)
+    fun clear(userId: Long)
     fun applyDiff(
         added: List<StudyGroup>,
         removedIds: List<Int>,
         updated: List<StudyGroup>,
-        login: String,
-        password: String
+        userId: Long
     )
 }

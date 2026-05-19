@@ -20,6 +20,7 @@ class ExecuteScriptTest {
             lastRequest = request
             return response
         }
+        override fun close() {}
     }
 
     private fun makeClient(response: IResponse = CommandResponse(ExitCode.OK, "")) = MockClient(response)

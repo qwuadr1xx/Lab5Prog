@@ -7,7 +7,6 @@ import utils.CommandName
 @Serializable
 class AddIfMaxRequest(
     val studyGroup: StudyGroup,
-    override val login: String,
-    override val password: String,
+    override val token: String,
     override val commandName: CommandName = CommandName.ADD_IF_MAX
 ) : IRequest

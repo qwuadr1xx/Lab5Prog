@@ -2,7 +2,6 @@ port: 8080
 maxRetries: 3
 socketTimeoutMs: 3000
 pingTimeoutMs: 1000
-healthPortOffset: 1000
 healthCheckIntervalMs: 5000
 servers:
   - host: server1

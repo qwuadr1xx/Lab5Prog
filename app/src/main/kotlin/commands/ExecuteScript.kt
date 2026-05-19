@@ -37,7 +37,7 @@ class ExecuteScript(
 
             if (flatLines.isEmpty()) return ExitCode.OK
 
-            val response = rudpClient.sendAndReceive(ExecuteScriptRequest(flatLines, session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(ExecuteScriptRequest(flatLines, session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
 

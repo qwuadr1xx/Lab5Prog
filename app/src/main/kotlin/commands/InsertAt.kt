@@ -23,7 +23,7 @@ class InsertAt(
                 val index = console.readLine().toInt()
                 ensure(index > 0) { "Значение index должно быть больше 0" }
                 val studyGroup = StudyGroupAsker(console = console).ask()
-                val response = rudpClient.sendAndReceive(InsertAtRequest(index, studyGroup, session.login, session.password)) as CommandResponse
+                val response = rudpClient.sendAndReceive(InsertAtRequest(index, studyGroup, session.token)) as CommandResponse
                 if (response.message.isNotEmpty()) console.printObject(response.message)
                 return response.exitCode
             } catch (e: Exception) {

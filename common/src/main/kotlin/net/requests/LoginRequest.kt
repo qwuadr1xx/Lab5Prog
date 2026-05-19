@@ -5,7 +5,8 @@ import utils.CommandName
 
 @Serializable
 class LoginRequest(
-    override val login: String,
-    override val password: String,
-    override val commandName: CommandName = CommandName.LOGIN
+    val login: String,
+    val password: String,
+    override val commandName: CommandName = CommandName.LOGIN,
+    override val token: String = ""
 ) : IRequest

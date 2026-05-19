@@ -21,7 +21,7 @@ class Undo(
                 console.printLine("Введите количество отменённых команд(больше 0):")
                 val n = console.readLine().toInt()
                 ensure(n > 0) { "Значение количества отменённых команд должно быть больше 0" }
-                val response = rudpClient.sendAndReceive(UndoRequest(n, session.login, session.password)) as CommandResponse
+                val response = rudpClient.sendAndReceive(UndoRequest(n, session.token)) as CommandResponse
                 if (response.message.isNotEmpty()) console.printObject(response.message)
                 return response.exitCode
             } catch (e: Exception) {

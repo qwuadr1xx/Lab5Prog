@@ -65,6 +65,8 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
 
         fun byteArrayFIN(): ByteArray = byteArrayOf(3)
 
+        fun byteArrayBALANCERPING(): ByteArray = byteArrayOf(4)
+
         fun isByteBufferACK(byteBuffer: ByteBuffer): Boolean {
             val type = byteBuffer.get()
             return type == 1.toByte()
@@ -85,5 +87,7 @@ class RUDPPacket(val type: Byte, val uuid: Uuid, val length: Int, val chunkIndex
         fun isByteArrayPING(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 2.toByte()
 
         fun isByteArrayFIN(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 3.toByte()
+
+        fun isByteArrayBALANCERPING(byteArray: ByteArray): Boolean = byteArray.isNotEmpty() && byteArray[0] == 4.toByte()
     }
 }

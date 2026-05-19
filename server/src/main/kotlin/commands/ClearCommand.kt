@@ -10,9 +10,9 @@ import utils.ExitCode
 class ClearCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as ClearRequest
-        cm.clear(request.login, request.password)
+        cm.clear(userId)
         return CommandResponse(ExitCode.OK, "Коллекция очищена")
     }
 }

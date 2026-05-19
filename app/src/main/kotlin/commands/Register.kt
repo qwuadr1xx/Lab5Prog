@@ -25,7 +25,7 @@ class Register(
             if (response.message.isNotEmpty()) console.printObject(response.message)
 
             if (response.exitCode == ExitCode.OK) {
-                session.set(login, password)
+                session.set(login, response.token)
                 console.printLine("Регистрация успешна. Вы вошли как: $login")
             }
             return response.exitCode

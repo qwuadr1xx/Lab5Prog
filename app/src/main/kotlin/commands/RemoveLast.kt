@@ -16,7 +16,7 @@ class RemoveLast(
     override fun execute(): ExitCode {
         console.printLine("Использование команды remove_last")
         try {
-            val response = rudpClient.sendAndReceive(RemoveLastRequest(session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(RemoveLastRequest(session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

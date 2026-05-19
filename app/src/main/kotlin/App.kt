@@ -2,6 +2,7 @@ package ru.qwuadrixx.app
 
 import exception.CommandNotFoundException
 import org.koin.core.context.startKoin
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.di.appModule
 import ru.qwuadrixx.app.managers.CommandManager
@@ -24,6 +25,11 @@ fun main() {
     val console = koin.get<IConsole>()
     val commandManager = koin.get<CommandManager>()
     val session = koin.get<UserSession>()
+    val rudpClient = koin.get<IRUDPClient>()
+
+    Runtime.getRuntime().addShutdownHook(Thread({
+        rudpClient.close()
+    }, "shutdown-hook"))
 
     while (true) {
         try {

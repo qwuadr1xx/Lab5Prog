@@ -2,16 +2,16 @@ package ru.qwuadrixx.app.session
 
 class UserSession {
     var login: String = ""
-    var password: String = ""
-    val isAuthenticated: Boolean get() = login.isNotEmpty()
+    var token: String = ""
+    val isAuthenticated: Boolean get() = token.isNotEmpty()
 
-    fun set(login: String, password: String) {
+    fun set(login: String, token: String) {
         this.login = login
-        this.password = password
+        this.token = token
     }
 
     fun clear() {
         login = ""
-        password = ""
+        token = ""
     }
 }

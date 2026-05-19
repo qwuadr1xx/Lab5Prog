@@ -19,7 +19,7 @@ class Info(private val rudpClient: IRUDPClient, private val console: IConsole, p
     override fun execute(): ExitCode {
         console.printLine("Использование команды info")
         try {
-            val response = rudpClient.sendAndReceive(InfoRequest(session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(InfoRequest(session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

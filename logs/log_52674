@@ -1,0 +1,140 @@
+11:49:07.617 [main] INFO ServerModule -- Конфигурация: port=52674, balancer=localhost:8080
+11:49:08.024 [main] INFO org.jooq.Constants -- 
+                                      
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@  @@@@  @@  @@    @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@    @@  @@  @@@@  @@@@@@@@@@
+@@@@@@@@@@        @@  @  @  @@@@@@@@@@
+@@@@@@@@@@        @@        @@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@  @@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  Thank you for using jOOQ 3.19.7 (Build date: 2024-04-04T12:53:41Z)
+                                      
+11:49:08.024 [main] INFO org.jooq.Constants -- 
+
+jOOQ tip of the day: You can formally nest records directly in SQL by projecting any ROW type: https://www.jooq.org/doc/latest/manual/sql-building/column-expressions/nested-records/
+
+11:49:08.039 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."study_group"."id", "s507981"."study_group"."name", "s507981"."study_group"."coordinates_id", "s507981"."study_group"."creation_date", "s507981"."study_group"."students_count", "s507981"."study_group"."expelled_students", "s507981"."study_group"."average_mark", "s507981"."study_group"."semester_enum", "s507981"."study_group"."admin_id", "s507981"."study_group"."creator_id", "s507981"."study_group"."place" from "s507981"."study_group" order by "s507981"."study_group"."place" asc
+11:49:08.042 [main] INFO org.jooq.impl.DefaultExecuteContext.logVersionSupport -- Version                  : Database version is supported by dialect POSTGRES: 18.3 (Homebrew)
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+--------------+--------------------------+--------------+-----------------+------------+-------------+--------+----------+-----+
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|name|coordinates_id|creation_date             |students_count|expelled_students|average_mark|semester_enum|admin_id|creator_id|place|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+--------------+--------------------------+--------------+-----------------+------------+-------------+--------+----------+-----+
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  67|123 |            67|2026-05-13T17:45:21.221618|           123|              123|         123|{null}       |  {null}|        16|    1|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 156|123 |           156|2026-05-18T22:51:16.215858|           123|              123|         123|{null}       |  {null}|        33|    2|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 157|123 |           157|2026-05-18T22:51:35.563632|           123|              123|         123|{null}       |  {null}|        33|    3|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 158|123 |           158|2026-05-18T22:52:02.559658|           123|              123|         123|{null}       |  {null}|        33|    4|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 159|111 |           159|2026-05-18T22:52:18.324014|           111|              111|         111|{null}       |  {null}|        33|    5|
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+--------------+--------------------------+--------------+-----------------+------------+-------------+--------+----------+-----+
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener --                          : |...record(s) truncated...
+11:49:08.063 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 11
+11:49:08.070 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.071 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 67
+11:49:08.074 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+-----+
+11:49:08.074 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|    y|
+11:49:08.074 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.075 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  67| 123|123.0|
+11:49:08.075 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.075 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.077 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.078 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 156
+11:49:08.078 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+-----+
+11:49:08.078 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|    y|
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 156| 123|123.0|
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.079 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 157
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+-----+
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|    y|
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 157| 123|123.0|
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.080 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 158
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+-----+
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|    y|
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 158| 123|123.0|
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.081 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 159
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+-----+
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|    y|
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 159| 111|111.0|
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+-----+
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.082 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 160
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 160|   1| 1.0|
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.083 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 161
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 161|   2| 2.0|
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.084 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 162
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 162|   3| 3.0|
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.085 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 163
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 163|   4| 4.0|
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.086 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 164
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 164|   1| 2.0|
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.087 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = ?
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."coordinates"."id", "s507981"."coordinates"."x", "s507981"."coordinates"."y" from "s507981"."coordinates" where "s507981"."coordinates"."id" = 165
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----+
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|   x|   y|
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener --                          : | 165|   3| 4.0|
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----+
+11:49:08.088 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.089 [main] DEBUG org.jooq.tools.LoggerListener -- Executing query          : select "s507981"."person"."id", "s507981"."person"."name", "s507981"."person"."birthday", "s507981"."person"."height", "s507981"."person"."passportid" from "s507981"."person" where "s507981"."person"."id" = ?
+11:49:08.089 [main] DEBUG org.jooq.tools.LoggerListener -- -> with bind values      : select "s507981"."person"."id", "s507981"."person"."name", "s507981"."person"."birthday", "s507981"."person"."height", "s507981"."person"."passportid" from "s507981"."person" where "s507981"."person"."id" = 1
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched result           : +----+----+----------+------+-----------+
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener --                          : |  id|name|birthday  |height|passportid |
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----------+------+-----------+
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener --                          : |   1|name|1111-11-11| 150.0|sdojfwooewf|
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener --                          : +----+----+----------+------+-----------+
+11:49:08.091 [main] DEBUG org.jooq.tools.LoggerListener -- Fetched row(s)           : 1
+11:49:08.094 [main] INFO ServerModule -- Коллекция загружена из БД: 11 элементов
+11:49:08.099 [main] INFO ru.qwuadrixx.client.HealthCheckListener -- Сервер зарегистрирован на балансировщике localhost:8080 (порт 52674)
+11:49:08.100 [main] INFO ru.qwuadrixx.client.RUDPServer -- Сервер запущен на порту 52674
+11:49:08.126 [db-change-listener] INFO ru.qwuadrixx.client.DbChangeListener -- DbChangeListener запущен, слушаю study_group_changed
+11:49:19.495 [shutdown-hook] INFO ru.qwuadrixx.client.RUDPServer -- Получен сигнал завершения, останавливаю сервер...
+11:49:19.496 [main] INFO ru.qwuadrixx.client.RUDPServer -- Сервер остановлен

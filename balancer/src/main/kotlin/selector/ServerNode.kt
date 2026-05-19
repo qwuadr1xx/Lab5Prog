@@ -1,15 +1,40 @@
 package ru.qwuadrixx.balancer.selector
 
+import ru.qwuadrixx.balancer.utils.IdGenerator
 import java.net.InetSocketAddress
-import java.util.concurrent.atomic.AtomicBoolean
+import java.time.Instant
 
-class ServerNode(host: String, port: Int) {
-    val address = InetSocketAddress(host, port)
-    private val alive = AtomicBoolean(true)
+class ServerNode(
+    host: String,
+    port: Int,
+    isEnabled: Boolean = true,
+    override val isMain: Boolean = false,
+    id: Int? = null
+) : IServerNode {
 
-    fun isAvailable(): Boolean = alive.get()
+    override val id: Int = id ?: IdGenerator.getAndIncrement()
+    override val address: InetSocketAddress = InetSocketAddress(host, port)
+    override val createdAt: Instant = Instant.now()
 
-    fun markDead() { alive.compareAndSet(true, false) }
+    @Volatile
+    override var isEnabled: Boolean = isEnabled
+        private set
 
-    fun markAlive() { alive.set(true) }
+    @Volatile
+    override var notAvailableSince: Instant? = null
+        private set
+
+    override fun isAvailable(): Boolean = notAvailableSince == null
+
+    override fun enable() { isEnabled = true }
+
+    override fun disable() { isEnabled = false }
+
+    override fun markDead() {
+        if (notAvailableSince == null) notAvailableSince = Instant.now()
+    }
+
+    override fun markAlive() {
+        notAvailableSince = null
+    }
 }

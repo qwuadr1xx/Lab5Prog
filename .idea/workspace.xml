@@ -10,19 +10,97 @@
   <component name="ChangeListManager">
     <list default="true" id="8374ef86-b439-4ae5-925a-2bda41dbcb92" name="Changes" comment="minor changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/App.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/IRUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/IRUDPClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/client/RUDPClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Add.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Add.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/AddIfMax.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/AddIfMax.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/AverageOfAverageMark.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/AverageOfAverageMark.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Clear.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Clear.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/CountGreaterThanAverageMark.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/CountGreaterThanAverageMark.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/CountLessThanAverageMark.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/CountLessThanAverageMark.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/ExecuteScript.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/ExecuteScript.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Info.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Info.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/InsertAt.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/InsertAt.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Login.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Login.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Register.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Register.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/RemoveById.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/RemoveById.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/RemoveLast.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/RemoveLast.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Show.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Show.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Undo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Undo.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/commands/Update.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/commands/Update.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/di/AppModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/di/AppModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/kotlin/session/UserSession.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/kotlin/session/UserSession.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/kotlin/CommandsTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/kotlin/CommandsTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/kotlin/ExecuteScriptTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/kotlin/ExecuteScriptTest.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/balancer/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/RUDPBalancer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/kotlin/RUDPBalancer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/di/BalancerModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/kotlin/di/BalancerModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/health/NodeHealthChecker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/kotlin/health/NodeHealthChecker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/selector/NodeSelector.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/kotlin/selector/ServerNode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/kotlin/selector/ServerNode.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/balancer/src/main/resources/balancer.yml" beforeDir="false" afterPath="$PROJECT_DIR$/balancer/src/main/resources/balancer.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/packet/RUDPPacket.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddIfMaxRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddIfMaxRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AddRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AverageOfAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/AverageOfAverageMarkRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ClearRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ClearRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountGreaterThanAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountGreaterThanAverageMarkRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountLessThanAverageMarkRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/CountLessThanAverageMarkRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ExecuteScriptRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ExecuteScriptRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/IRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/IRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/InfoRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/InfoRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/InsertAtRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/InsertAtRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/LoginRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/LoginRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RegisterRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RegisterRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RemoveByIdRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RemoveByIdRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RemoveLastRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/RemoveLastRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ShowRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/ShowRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/UndoRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/UndoRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/UpdateRequest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/requests/UpdateRequest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/LoginResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/LoginResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/RegisterResponse.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/net/responses/RegisterResponse.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/kotlin/utils/CommandName.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/kotlin/utils/CommandName.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/test/kotlin/SerializationTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/test/kotlin/SerializationTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/balancer.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker/balancer.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/server/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/SaveCommand.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/CollectionSyncListener.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/CollectionSyncNotifier.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/HealthCheckListener.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/HealthCheckListener.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServerReceiver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServerReceiver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServerSender.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/client/RUDPServerSender.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/AddCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/AddCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/AddIfMaxCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/AddIfMaxCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/AverageOfAverageMarkCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/AverageOfAverageMarkCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/ClearCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/ClearCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/CountGreaterThanAverageMarkCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/CountGreaterThanAverageMarkCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/CountLessThanAverageMarkCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/CountLessThanAverageMarkCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/InfoCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/InfoCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/InsertAtCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/InsertAtCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/LoginCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/LoginCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/RegisterCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/RegisterCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/RemoveByIdCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/RemoveByIdCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/RemoveLastCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/RemoveLastCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/ServerCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/ServerCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/ShowCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/ShowCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/UndoCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/UndoCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/commands/UpdateCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/commands/UpdateCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/di/ServerModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/di/ServerModule.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/CollectionManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/CollectionManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/FileManager.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/FileWatcher.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/ICollectionManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/ICollectionManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/IFileManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/IUserManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/IUserManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/RequestManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/RequestManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/managers/UserManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/managers/UserManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/HistoryRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/HistoryRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/IHistoryRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/IHistoryRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/IStudyGroupRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/IStudyGroupRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/IUserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/IUserRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/StudyGroupRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/StudyGroupRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/repository/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/repository/UserRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/resources/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/server.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/src/test/kotlin/ServerCommandsTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/test/kotlin/ServerCommandsTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -142,11 +220,14 @@
     "Gradle.SerializationTest.executor": "Run",
     "Gradle.ServerCommandsTest.executor": "Run",
     "Kotlin.AppKt.executor": "Run",
+    "Kotlin.Balancer.executor": "Run",
+    "Kotlin.Client.executor": "Run",
     "Kotlin.MainKt (1).executor": "Run",
     "Kotlin.MainKt.executor": "Run",
+    "Kotlin.Server.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "lab7",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/qwuadrixx/IdeaProjects/Lab5Prog/app/src/main/resources",
     "project.structure.last.edited": "Project",
@@ -168,7 +249,7 @@
       <recent name="models" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Lab5Prog:server [generateJooq]">
+  <component name="RunManager" selected="Kotlin.Client">
     <configuration name="Lab5Prog:server [generateJooq]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -215,7 +296,15 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="AppKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+    <configuration name="Balancer" type="JetRunConfigurationType" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="ru.qwuadrixx.balancer.MainKt" />
+      <module name="Lab5Prog.balancer.main" />
+      <shortenClasspath name="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client" type="JetRunConfigurationType" temporary="true">
       <envs>
         <env name="SAVE_FILE_NAME" value="$PROJECT_DIR$/app/src/main/resources/SaveFile.txt" />
       </envs>
@@ -226,14 +315,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MainKt (1)" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="ru.qwuadrixx.balancer.MainKt" />
-      <module name="Lab5Prog.balancer.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MainKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+    <configuration name="Server" type="JetRunConfigurationType" temporary="true">
       <option name="MAIN_CLASS_NAME" value="ru.qwuadrixx.MainKt" />
       <module name="Lab5Prog.server.main" />
       <shortenClasspath name="NONE" />
@@ -244,16 +326,16 @@
     <list>
       <item itemvalue="Gradle.Lab5Prog:server [generateJooq]" />
       <item itemvalue="Gradle.SerializationTest" />
-      <item itemvalue="Kotlin.MainKt (1)" />
-      <item itemvalue="Kotlin.MainKt" />
-      <item itemvalue="Kotlin.AppKt" />
+      <item itemvalue="Kotlin.Balancer" />
+      <item itemvalue="Kotlin.Server" />
+      <item itemvalue="Kotlin.Client" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.Server" />
+        <item itemvalue="Kotlin.Client" />
+        <item itemvalue="Kotlin.Balancer" />
         <item itemvalue="Gradle.Lab5Prog:server [generateJooq]" />
-        <item itemvalue="Kotlin.MainKt" />
-        <item itemvalue="Kotlin.MainKt (1)" />
-        <item itemvalue="Kotlin.AppKt" />
         <item itemvalue="Gradle.SerializationTest" />
       </list>
     </recent_temporary>

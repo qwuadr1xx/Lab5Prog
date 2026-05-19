@@ -9,9 +9,9 @@ import utils.ExitCode
 class RemoveLastCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as net.requests.RemoveLastRequest
-        cm.removeLast(request.login, request.password)
+        cm.removeLast(userId)
         return CommandResponse(ExitCode.OK, "Последний элемент удалён")
     }
 }

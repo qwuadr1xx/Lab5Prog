@@ -28,6 +28,7 @@ class MockRUDPClient(private val response: IResponse) : IRUDPClient {
         lastRequest = request
         return response
     }
+    override fun close() {}
 }
 
 internal class CommandsTest {

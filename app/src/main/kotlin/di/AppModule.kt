@@ -70,6 +70,11 @@ val appModule = module {
             register(RemoveLast(client, console, session))
             register(Update(client, console, session))
             register(Undo(client, console, session))
+            register(ListServers(client, console, session))
+            register(EnableServer(client, console, session))
+            register(DisableServer(client, console, session))
+            register(AddServer(client, console, session))
+            register(RemoveServer(client, console, session))
         }
     }
 }

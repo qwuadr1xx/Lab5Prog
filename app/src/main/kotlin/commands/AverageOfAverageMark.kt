@@ -16,7 +16,7 @@ class AverageOfAverageMark(
     override fun execute(): ExitCode {
         console.printLine("Использование команды average_of_average_mark")
         try {
-            val response = rudpClient.sendAndReceive(AverageOfAverageMarkRequest(session.login, session.password)) as CommandResponse
+            val response = rudpClient.sendAndReceive(AverageOfAverageMarkRequest(session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
         } catch (e: Exception) {

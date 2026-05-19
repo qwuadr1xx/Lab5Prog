@@ -10,9 +10,9 @@ import utils.ExitCode
 class UpdateCommand(private val cm: ICollectionManager) : ServerCommand() {
     override val isUndoable = true
 
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         request as UpdateRequest
-        cm.updateById(request.id, request.studyGroup, request.login, request.password)
+        cm.updateById(request.id, request.studyGroup, userId)
         return CommandResponse(ExitCode.OK, "Элемент с id ${request.id} обновлён")
     }
 }
