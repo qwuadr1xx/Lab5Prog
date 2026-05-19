@@ -7,7 +7,7 @@ import ru.qwuadrixx.managers.ICollectionManager
 import utils.ExitCode
 
 class AverageOfAverageMarkCommand(private val cm: ICollectionManager) : ServerCommand() {
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         val avg = cm.getAverageMarkFromAll()
         return CommandResponse(ExitCode.OK, "Среднее значение averageMark: $avg")
     }

@@ -1,16 +1,19 @@
-@file:OptIn(kotlin.uuid.ExperimentalUuidApi::class)
-
 package ru.qwuadrixx.app.di
 
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.Serializable
 import net.assembler.Assembler
+import net.assembler.IAssembler
 import org.koin.dsl.module
 import org.slf4j.LoggerFactory
+import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.client.RUDPClient
 import ru.qwuadrixx.app.commands.*
 import ru.qwuadrixx.app.console.Console
+import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.managers.CommandManager
+import ru.qwuadrixx.app.session.UserSession
+import kotlin.uuid.ExperimentalUuidApi
 
 private val log = LoggerFactory.getLogger("AppModule")
 
@@ -37,34 +40,41 @@ fun loadClientConfig(): ClientConfig {
         .also { log.info("Конфигурация клиента: host={}, port={}", it.serverHost, it.serverPort) }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 val appModule = module {
     single { loadClientConfig() }
-    single { Assembler() }
-    single { Console() }
+    single<IAssembler> { Assembler() }
+    single<IConsole> { Console() }
+    single<IRUDPClient> { RUDPClient(get()) }
+    single { UserSession() }
     single {
-        val config = get<ClientConfig>()
-        RUDPClient(get(), config.serverHost, config.serverPort, config.maxRetries, config.socketTimeoutMs)
-    }
-    single {
-        val client = get<RUDPClient>()
-        val console = get<Console>()
+        val client = get<IRUDPClient>()
+        val console = get<IConsole>()
+        val session = get<UserSession>()
         CommandManager().apply {
-            register(Add(client, console))
-            register(AddIfMax(client, console))
-            register(Show(client, console))
-            register(AverageOfAverageMark(client, console))
-            register(Clear(client, console))
-            register(CountLessThanAverageMark(client, console))
-            register(CountGreaterThanAverageMark(client, console))
-            register(ExecuteScript(client, console))
+            register(Login(client, console, session))
+            register(Register(client, console, session))
+            register(Add(client, console, session))
+            register(AddIfMax(client, console, session))
+            register(Show(client, console, session))
+            register(AverageOfAverageMark(client, console, session))
+            register(Clear(client, console, session))
+            register(CountLessThanAverageMark(client, console, session))
+            register(CountGreaterThanAverageMark(client, console, session))
+            register(ExecuteScript(client, console, session))
             register(Exit(console))
             register(Help(console, this))
-            register(Info(client, console))
-            register(InsertAt(client, console))
-            register(RemoveById(client, console))
-            register(RemoveLast(client, console))
-            register(Update(client, console))
-            register(Undo(client, console))
+            register(Info(client, console, session))
+            register(InsertAt(client, console, session))
+            register(RemoveById(client, console, session))
+            register(RemoveLast(client, console, session))
+            register(Update(client, console, session))
+            register(Undo(client, console, session))
+            register(ListServers(client, console, session))
+            register(EnableServer(client, console, session))
+            register(DisableServer(client, console, session))
+            register(AddServer(client, console, session))
+            register(RemoveServer(client, console, session))
         }
     }
 }

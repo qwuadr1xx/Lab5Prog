@@ -8,5 +8,6 @@ import utils.CommandName
 class UpdateRequest(
     val id: Int,
     val studyGroup: StudyGroup,
+    override val token: String,
     override val commandName: CommandName = CommandName.UPDATE
 ) : IRequest

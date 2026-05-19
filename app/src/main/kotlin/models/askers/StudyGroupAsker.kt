@@ -28,7 +28,7 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
         val groupAdmin = askGroupAdmin()
         return StudyGroup(name = name, coordinates = coordinates, studentsCount = studentsCount,
             expelledStudents = expelledStudents, averageMark = averageMark, semesterEnum = semester,
-            groupAdmin = groupAdmin)
+            groupAdmin = groupAdmin, ownerId = null)
     }
 
     fun ask(id: Int): StudyGroup {
@@ -41,7 +41,7 @@ class StudyGroupAsker(private val console: IConsole) : Asker<StudyGroup> {
         val groupAdmin = askGroupAdmin()
         return StudyGroup(id = id, name = name, coordinates = coordinates, studentsCount = studentsCount,
             expelledStudents = expelledStudents, averageMark = averageMark, semesterEnum = semester,
-            groupAdmin = groupAdmin)
+            groupAdmin = groupAdmin, ownerId = null)
     }
 
     private fun askName(): String {

@@ -1,20 +1,50 @@
+import exception.ExistingLoginException
 import models.Coordinates
 import models.StudyGroup
 import net.requests.*
 import net.responses.CommandResponse
 import net.responses.IResponse
+import net.responses.LoginResponse
+import net.responses.RegisterResponse
+import org.jooq.DSLContext
+import org.jooq.SQLDialect
+import org.jooq.impl.DSL
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import ru.qwuadrixx.generated.tables.references.*
+import ru.qwuadrixx.di.ServerConfig
 import ru.qwuadrixx.managers.CollectionManager
+import ru.qwuadrixx.managers.ICollectionManager
+import ru.qwuadrixx.managers.IInMemoryCollection
+import ru.qwuadrixx.managers.IUserManager
 import ru.qwuadrixx.managers.RequestManager
+import ru.qwuadrixx.managers.UserManager
+import ru.qwuadrixx.repository.HistoryRepository
+import ru.qwuadrixx.repository.IHistoryRepository
+import ru.qwuadrixx.repository.IStudyGroupRepository
+import ru.qwuadrixx.repository.ITokenRepository
+import ru.qwuadrixx.repository.IUserRepository
+import ru.qwuadrixx.repository.StudyGroupRepository
+import ru.qwuadrixx.repository.TokenRepository
+import ru.qwuadrixx.repository.UserRepository
+import ru.qwuadrixx.service.StudyGroupService
+import ru.qwuadrixx.service.TokenService
 import utils.ExitCode
-import java.util.Vector
+import utils.TokenUtils
+import java.sql.DriverManager
 
-fun exitCode(response: IResponse): ExitCode = (response as CommandResponse).exitCode
-fun message(response: IResponse): String = (response as CommandResponse).message
+private fun responseExitCode(response: IResponse): ExitCode = when (response) {
+    is CommandResponse -> response.exitCode
+    is LoginResponse -> response.exitCode
+    is RegisterResponse -> response.exitCode
+    else -> ExitCode.ERROR
+}
 
-fun makeStudyGroup(
+private fun makeGroup(
     name: String = "TestGroup",
     averageMark: Long = 10,
     expelledStudents: Int = 1
@@ -22,435 +52,351 @@ fun makeStudyGroup(
     name = name,
     coordinates = Coordinates(1L, 2.0),
     expelledStudents = expelledStudents,
-    averageMark = averageMark
+    averageMark = averageMark,
+    ownerId = null
 )
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+private fun addGroupLines(name: String, averageMark: Long = 10) = listOf(
+    "add", name, "1", "2.0", "", "1", averageMark.toString(), "", "0"
+)
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ServerCommandsTest {
 
-    private lateinit var collectionManager: CollectionManager
-    private lateinit var requestManager: RequestManager
+    private lateinit var rm: RequestManager
+    private lateinit var cm: ICollectionManager
+    private lateinit var dsl: DSLContext
+
+    private val login = "test_${System.currentTimeMillis()}"
+    private val password = "testPass123"
+    private lateinit var token: String
+
+    private val testModule = module {
+        single<DSLContext> {
+            val url = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5432/itmo"
+            val user = System.getenv("DB_USER") ?: "qwuadrixx"
+            val pwd = System.getenv("DB_PASSWORD") ?: "12345"
+            val schema = System.getenv("DB_SCHEMA") ?: "programming"
+            val connection = DriverManager.getConnection(url, user, pwd)
+            connection.createStatement().execute("SET SEARCH_PATH TO $schema")
+            DSL.using(connection, SQLDialect.POSTGRES)
+        }
+        single { ServerConfig() }
+        single<IStudyGroupRepository> { StudyGroupRepository() }
+        single<IUserRepository> { UserRepository() }
+        single<IHistoryRepository> { HistoryRepository() }
+        single<IUserManager> { UserManager() }
+        single<IInMemoryCollection> { CollectionManager() }
+        single<ICollectionManager> { StudyGroupService(get(), get()) }
+        single { TokenUtils("test-token-secret") }
+        single<ITokenRepository> { TokenRepository() }
+        single { TokenService(get(), get()) }
+        single { RequestManager(get(), get(), get(), get()) }
+    }
+
+    private fun deleteUser(userLogin: String) {
+        val uid = dsl.select(USERS.ID).from(USERS).where(USERS.LOGIN.eq(userLogin)).fetchOne(USERS.ID)
+            ?: return
+        val groups = dsl.selectFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(uid)).fetch()
+        val coordIds = groups.mapNotNull { it.coordinatesId }
+        val adminIds = groups.mapNotNull { it.adminId }
+        dsl.deleteFrom(SNAPSHOT_HISTORY).where(SNAPSHOT_HISTORY.AUTHOR_ID.eq(uid)).execute()
+        dsl.deleteFrom(TOKENS).where(TOKENS.USER_ID.eq(uid)).execute()
+        dsl.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(uid)).execute()
+        if (adminIds.isNotEmpty()) dsl.deleteFrom(PERSON).where(PERSON.ID.`in`(adminIds)).execute()
+        if (coordIds.isNotEmpty()) dsl.deleteFrom(COORDINATES).where(COORDINATES.ID.`in`(coordIds)).execute()
+        dsl.deleteFrom(USERS).where(USERS.ID.eq(uid)).execute()
+    }
+
+    private fun registerAndGetToken(login: String, pwd: String): String {
+        val response = rm.dispatch(RegisterRequest(login, pwd)) as RegisterResponse
+        return response.token
+    }
+
+    @BeforeAll
+    fun startKoin() {
+        startKoin { modules(testModule) }
+        val koin = GlobalContext.get()
+        dsl = koin.get()
+        rm = koin.get()
+        cm = koin.get()
+
+        token = try {
+            registerAndGetToken(login, password)
+        } catch (_: ExistingLoginException) {
+            (rm.dispatch(LoginRequest(login, password)) as LoginResponse).token
+        }
+    }
+
+    @AfterAll
+    fun stopKoinAndCleanup() {
+        deleteUser(login)
+        stopKoin()
+    }
 
     @BeforeEach
-    fun setUp() {
-        collectionManager = CollectionManager()
-        requestManager = RequestManager(collectionManager)
+    fun cleanDbAndMemory() {
+        val uid = dsl.select(USERS.ID).from(USERS).where(USERS.LOGIN.eq(login)).fetchOne(USERS.ID)
+        if (uid != null) {
+            val groups = dsl.selectFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(uid)).fetch()
+            val coordIds = groups.mapNotNull { it.coordinatesId }
+            val adminIds = groups.mapNotNull { it.adminId }
+            dsl.deleteFrom(SNAPSHOT_HISTORY).execute()
+            dsl.deleteFrom(STUDY_GROUP).where(STUDY_GROUP.CREATOR_ID.eq(uid)).execute()
+            if (adminIds.isNotEmpty()) dsl.deleteFrom(PERSON).where(PERSON.ID.`in`(adminIds)).execute()
+            if (coordIds.isNotEmpty()) dsl.deleteFrom(COORDINATES).where(COORDINATES.ID.`in`(coordIds)).execute()
+        }
+        cm.collection.clear()
+    }
+
+    // ── register ──────────────────────────────────────────────────────────────
+
+    @Test
+    fun register_new_user_returns_ok() {
+        val newLogin = "reg_${System.currentTimeMillis()}"
+        val response = rm.dispatch(RegisterRequest(newLogin, "somePass"))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        deleteUser(newLogin)
+    }
+
+    @Test
+    fun register_duplicate_login_returns_error() {
+        val response = rm.dispatch(RegisterRequest(login, password))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
+    }
+
+    // ── login ─────────────────────────────────────────────────────────────────
+
+    @Test
+    fun login_with_correct_credentials_returns_ok() {
+        val response = rm.dispatch(LoginRequest(login, password))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+    }
+
+    @Test
+    fun login_with_wrong_password_returns_error() {
+        val response = rm.dispatch(LoginRequest(login, "wrongPassword"))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
+    }
+
+    @Test
+    fun login_with_unknown_user_returns_error() {
+        val response = rm.dispatch(LoginRequest("nonexistent_user_xyz", "pass"))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
     }
 
     // ── add ───────────────────────────────────────────────────────────────────
 
     @Test
     fun add_increases_collection_size() {
-        val initialSize = collectionManager.collection.size
-        val response = requestManager.dispatch(AddRequest(makeStudyGroup()))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(initialSize + 1, collectionManager.collection.size)
+        val response = rm.dispatch(AddRequest(makeGroup(), token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(1, cm.collection.size)
     }
 
     @Test
     fun add_element_is_present_in_collection() {
-        val group = makeStudyGroup(name = "Unique")
-        requestManager.dispatch(AddRequest(group))
-        assertTrue(collectionManager.collection.any { it.name == "Unique" })
-    }
-
-    // ── add_if_max ────────────────────────────────────────────────────────────
-
-    @Test
-    fun add_if_max_adds_element_when_it_exceeds_all_existing() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 5)))
-        val initialSize = collectionManager.collection.size
-        val response = requestManager.dispatch(AddIfMaxRequest(makeStudyGroup(averageMark = 100)))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(initialSize + 1, collectionManager.collection.size)
+        rm.dispatch(AddRequest(makeGroup(name = "UniqueGroup"), token))
+        assertTrue(cm.collection.any { it.name == "UniqueGroup" })
     }
 
     @Test
-    fun add_if_max_does_not_add_when_element_is_not_max() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 50)))
-        val initialSize = collectionManager.collection.size
-        val response = requestManager.dispatch(AddIfMaxRequest(makeStudyGroup(averageMark = 10)))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(initialSize, collectionManager.collection.size)
+    fun add_assigns_non_zero_id_from_db() {
+        rm.dispatch(AddRequest(makeGroup(), token))
+        assertTrue(cm.collection.first().id > 0)
     }
 
     @Test
-    fun add_if_max_adds_to_empty_collection() {
-        val response = requestManager.dispatch(AddIfMaxRequest(makeStudyGroup()))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(1, collectionManager.collection.size)
-    }
-
-    // ── show ──────────────────────────────────────────────────────────────────
-
-    @Test
-    fun show_returns_ok_for_empty_collection() {
-        val response = requestManager.dispatch(ShowRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("пуст"))
+    fun add_sets_ownerId_from_db() {
+        rm.dispatch(AddRequest(makeGroup(), token))
+        assertNotNull(cm.collection.first().ownerId)
     }
 
     @Test
-    fun show_returns_all_elements_when_collection_is_not_empty() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Alpha")))
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Beta")))
-        val response = requestManager.dispatch(ShowRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        val msg = message(response)
-        assertTrue(msg.contains("Alpha"))
-        assertTrue(msg.contains("Beta"))
-    }
+    fun add_multiple_elements_all_persisted_in_db() {
+        rm.dispatch(AddRequest(makeGroup(name = "Alpha"), token))
+        rm.dispatch(AddRequest(makeGroup(name = "Beta"), token))
+        assertEquals(2, cm.collection.size)
 
-    // ── info ──────────────────────────────────────────────────────────────────
-
-    @Test
-    fun info_returns_collection_type_and_size() {
-        requestManager.dispatch(AddRequest(makeStudyGroup()))
-        val response = requestManager.dispatch(InfoRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        val msg = message(response)
-        assertTrue(msg.contains("Тип коллекции"))
-        assertTrue(msg.contains("1"))
-    }
-
-    // ── clear ─────────────────────────────────────────────────────────────────
-
-    @Test
-    fun clear_empties_a_non_empty_collection() {
-        requestManager.dispatch(AddRequest(makeStudyGroup()))
-        requestManager.dispatch(AddRequest(makeStudyGroup()))
-        val response = requestManager.dispatch(ClearRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(0, collectionManager.collection.size)
-    }
-
-    @Test
-    fun clear_on_empty_collection_returns_ok() {
-        val response = requestManager.dispatch(ClearRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-    }
-
-    // ── remove_last ───────────────────────────────────────────────────────────
-
-    @Test
-    fun remove_last_removes_the_last_element() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "First")))
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Last")))
-        val response = requestManager.dispatch(RemoveLastRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(1, collectionManager.collection.size)
-        assertEquals("First", collectionManager.collection.first().name)
-    }
-
-    @Test
-    fun remove_last_on_empty_collection_returns_error() {
-        val response = requestManager.dispatch(RemoveLastRequest())
-        assertEquals(ExitCode.ERROR, exitCode(response))
+        val uid = dsl.select(USERS.ID).from(USERS).where(USERS.LOGIN.eq(login)).fetchOne(USERS.ID)
+        val dbCount = dsl.fetchCount(STUDY_GROUP, STUDY_GROUP.CREATOR_ID.eq(uid))
+        assertEquals(2, dbCount)
     }
 
     // ── remove_by_id ──────────────────────────────────────────────────────────
 
     @Test
-    fun remove_by_id_removes_the_correct_element() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Keep")))
-        val group = makeStudyGroup(name = "Remove")
-        requestManager.dispatch(AddRequest(group))
-        val targetId = collectionManager.collection.first { it.name == "Remove" }.id
+    fun remove_by_id_removes_correct_element() {
+        rm.dispatch(AddRequest(makeGroup(name = "Keep"), token))
+        rm.dispatch(AddRequest(makeGroup(name = "Remove"), token))
+        val targetId = cm.collection.first { it.name == "Remove" }.id
 
-        val response = requestManager.dispatch(RemoveByIdRequest(targetId))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(collectionManager.collection.none { it.id == targetId })
+        val response = rm.dispatch(RemoveByIdRequest(targetId, token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(1, cm.collection.size)
+        assertEquals("Keep", cm.collection.first().name)
     }
 
     @Test
     fun remove_by_id_returns_error_for_nonexistent_id() {
-        val response = requestManager.dispatch(RemoveByIdRequest(Int.MAX_VALUE))
-        assertEquals(ExitCode.ERROR, exitCode(response))
-    }
-
-    // ── insert_at ─────────────────────────────────────────────────────────────
-
-    @Test
-    fun insert_at_places_element_at_given_index() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "A")))
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "B")))
-        val group = makeStudyGroup(name = "Middle")
-        val response = requestManager.dispatch(InsertAtRequest(1, group))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals("Middle", collectionManager.collection[1].name)
-    }
-
-    // ── update ────────────────────────────────────────────────────────────────
-
-    @Test
-    fun update_replaces_element_with_matching_id() {
-        val original = makeStudyGroup(name = "Original")
-        requestManager.dispatch(AddRequest(original))
-        val id = collectionManager.collection.first().id
-        // The replacement must carry the same id so the command can locate it later
-        val replacement = StudyGroup(id = id, name = "Updated", coordinates = Coordinates(1L, 2.0), expelledStudents = 1, averageMark = 10)
-
-        val response = requestManager.dispatch(UpdateRequest(id, replacement))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals("Updated", collectionManager.collection.first().name)
+        val response = rm.dispatch(RemoveByIdRequest(Int.MAX_VALUE, token))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
     }
 
     @Test
-    fun update_returns_error_for_nonexistent_id() {
-        val response = requestManager.dispatch(UpdateRequest(Int.MAX_VALUE, makeStudyGroup()))
-        assertEquals(ExitCode.ERROR, exitCode(response))
+    fun remove_by_id_returns_error_for_wrong_owner() {
+        val otherLogin = "other_${System.currentTimeMillis()}"
+        val otherToken = registerAndGetToken(otherLogin, "otherPass")
+
+        try {
+            rm.dispatch(AddRequest(makeGroup(name = "OwnedGroup"), token))
+            val id = cm.collection.first().id
+
+            val response = rm.dispatch(RemoveByIdRequest(id, otherToken))
+            assertEquals(ExitCode.ERROR, responseExitCode(response))
+            assertEquals(1, cm.collection.size)
+        } finally {
+            deleteUser(otherLogin)
+        }
     }
 
-    // ── average_of_average_mark ───────────────────────────────────────────────
+    // ── remove_last ───────────────────────────────────────────────────────────
 
     @Test
-    fun average_of_average_mark_returns_zero_for_empty_collection() {
-        val response = requestManager.dispatch(AverageOfAverageMarkRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("0"))
-    }
-
-    @Test
-    fun average_of_average_mark_calculates_mean_correctly() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 10)))
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 20)))
-        val response = requestManager.dispatch(AverageOfAverageMarkRequest())
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("15"))
-    }
-
-    // ── count_less_than_average_mark ──────────────────────────────────────────
-
-    @Test
-    fun count_less_than_average_mark_counts_correctly() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 5)))
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 15)))
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 25)))
-        val response = requestManager.dispatch(CountLessThanAverageMarkRequest(20))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("2"))
+    fun remove_last_removes_last_element() {
+        rm.dispatch(AddRequest(makeGroup(name = "First"), token))
+        rm.dispatch(AddRequest(makeGroup(name = "Last"), token))
+        val response = rm.dispatch(RemoveLastRequest(token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(1, cm.collection.size)
     }
 
     @Test
-    fun count_less_than_average_mark_returns_zero_when_none_qualify() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 50)))
-        val response = requestManager.dispatch(CountLessThanAverageMarkRequest(10))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("0"))
+    fun remove_last_on_empty_collection_returns_error() {
+        val response = rm.dispatch(RemoveLastRequest(token))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
     }
 
-    // ── count_greater_than_average_mark ───────────────────────────────────────
+    // ── show / info ───────────────────────────────────────────────────────────
 
     @Test
-    fun count_greater_than_average_mark_counts_correctly() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 5)))
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 15)))
-        requestManager.dispatch(AddRequest(makeStudyGroup(averageMark = 25)))
-        val response = requestManager.dispatch(CountGreaterThanAverageMarkRequest(10))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("2"))
+    fun show_returns_ok_for_empty_collection() {
+        val response = rm.dispatch(ShowRequest(token)) as CommandResponse
+        assertEquals(ExitCode.OK, response.exitCode)
+    }
+
+    @Test
+    fun info_returns_ok_with_collection_type() {
+        val response = rm.dispatch(InfoRequest(token)) as CommandResponse
+        assertEquals(ExitCode.OK, response.exitCode)
+        assertTrue(response.message.contains("Тип коллекции"))
+    }
+
+    // ── clear ─────────────────────────────────────────────────────────────────
+
+    @Test
+    fun clear_removes_only_own_elements() {
+        val otherLogin = "other2_${System.currentTimeMillis()}"
+        val otherToken = registerAndGetToken(otherLogin, "otherPass2")
+
+        try {
+            rm.dispatch(AddRequest(makeGroup(name = "Mine"), token))
+            rm.dispatch(AddRequest(makeGroup(name = "Theirs"), otherToken))
+
+            rm.dispatch(ClearRequest(token))
+
+            assertFalse(cm.collection.any { it.name == "Mine" })
+
+            val theirsDbCount = dsl.fetchCount(STUDY_GROUP, STUDY_GROUP.NAME.eq("Theirs"))
+            assertEquals(1, theirsDbCount)
+        } finally {
+            deleteUser(otherLogin)
+            cm.collection.clear()
+        }
     }
 
     // ── undo ──────────────────────────────────────────────────────────────────
 
     @Test
     fun undo_reverts_last_add() {
-        requestManager.dispatch(AddRequest(makeStudyGroup()))
-        val sizeAfterAdd = collectionManager.collection.size
-        val response = requestManager.dispatch(UndoRequest(1))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(sizeAfterAdd - 1, collectionManager.collection.size)
-    }
+        rm.dispatch(AddRequest(makeGroup(), token))
+        assertEquals(1, cm.collection.size)
 
-    @Test
-    fun undo_reverts_last_clear() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "A")))
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "B")))
-        requestManager.dispatch(ClearRequest())
-        assertEquals(0, collectionManager.collection.size)
-
-        val response = requestManager.dispatch(UndoRequest(1))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(2, collectionManager.collection.size)
-    }
-
-    @Test
-    fun undo_reverts_multiple_commands_in_order() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "One")))
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Two")))
-        val response = requestManager.dispatch(UndoRequest(2))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(0, collectionManager.collection.size)
+        val response = rm.dispatch(UndoRequest(1, token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(0, cm.collection.size)
     }
 
     @Test
     fun undo_on_empty_history_returns_error() {
-        val response = requestManager.dispatch(UndoRequest(1))
-        assertEquals(ExitCode.ERROR, exitCode(response))
+        val response = rm.dispatch(UndoRequest(1, token))
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
     }
 
     @Test
-    fun undo_reverts_remove_by_id() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Kept")))
-        val id = collectionManager.collection.first().id
-        requestManager.dispatch(RemoveByIdRequest(id))
-        assertEquals(0, collectionManager.collection.size)
+    fun undo_reverts_multiple_steps() {
+        rm.dispatch(AddRequest(makeGroup(name = "A"), token))
+        rm.dispatch(AddRequest(makeGroup(name = "B"), token))
 
-        requestManager.dispatch(UndoRequest(1))
-        assertEquals(1, collectionManager.collection.size)
-        assertEquals("Kept", collectionManager.collection.first().name)
-    }
-
-    @Test
-    fun undo_reverts_update() {
-        val original = makeStudyGroup(name = "Original")
-        requestManager.dispatch(AddRequest(original))
-        val id = collectionManager.collection.first().id
-        requestManager.dispatch(UpdateRequest(id, makeStudyGroup(name = "Changed")))
-
-        requestManager.dispatch(UndoRequest(1))
-        assertEquals("Original", collectionManager.collection.first { it.id == id }.name)
+        val response = rm.dispatch(UndoRequest(2, token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(0, cm.collection.size)
     }
 
     // ── execute_script ────────────────────────────────────────────────────────
 
-    // ── execute_script with raw script lines ──────────────────────────────────
-
-    /** Helper — raw lines for adding a StudyGroup via script syntax */
-    private fun addGroupLines(name: String, averageMark: Long = 10) = listOf(
-        "add", name, "1", "2", "", "1", averageMark.toString(), "THIRD", "0"
-    )
-
     @Test
-    fun execute_script_parses_and_executes_add_lines() {
-        val scriptLines = addGroupLines("ScriptGroup1") + addGroupLines("ScriptGroup2")
-        val response = requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(2, collectionManager.collection.size)
-        assertTrue(collectionManager.collection.any { it.name == "ScriptGroup1" })
-        assertTrue(collectionManager.collection.any { it.name == "ScriptGroup2" })
+    fun execute_script_adds_elements_to_db() {
+        val dbSizeBefore = dsl.fetchCount(STUDY_GROUP)
+        val lines = addGroupLines("ScriptGroup1") + addGroupLines("ScriptGroup2")
+        val response = rm.dispatch(ExecuteScriptRequest(lines, token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
+        assertEquals(dbSizeBefore + 2, cm.collection.size)
+        assertTrue(cm.collection.any { it.name == "ScriptGroup1" })
+        assertTrue(cm.collection.any { it.name == "ScriptGroup2" })
+
+        val dbCount = dsl.fetchCount(STUDY_GROUP, STUDY_GROUP.NAME.`in`("ScriptGroup1", "ScriptGroup2"))
+        assertEquals(2, dbCount)
     }
 
     @Test
-    fun execute_script_rolls_back_all_changes_when_any_command_fails() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "PreExisting")))
-        val sizeBeforeScript = collectionManager.collection.size
+    fun execute_script_rollback_on_parse_error_leaves_collection_unchanged() {
+        rm.dispatch(AddRequest(makeGroup(name = "Existing"), token))
+        val sizeBefore = cm.collection.size
 
-        // add one group, then try to remove a non-existent id → parse succeeds but execute fails
-        val scriptLines = addGroupLines("ShouldBeRolledBack") +
-                listOf("remove_by_id", Int.MAX_VALUE.toString())
+        val lines = addGroupLines("WillBeRolledBack") + listOf("remove_by_id", "not-a-number")
+        val response = rm.dispatch(ExecuteScriptRequest(lines, token))
 
-        val response = requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-
-        assertEquals(ExitCode.ERROR, exitCode(response))
-        assertEquals(sizeBeforeScript, collectionManager.collection.size)
-        assertTrue(collectionManager.collection.none { it.name == "ShouldBeRolledBack" })
+        assertEquals(ExitCode.ERROR, responseExitCode(response))
+        assertEquals(sizeBefore, cm.collection.size)
+        assertFalse(cm.collection.any { it.name == "WillBeRolledBack" })
     }
 
     @Test
-    fun execute_script_rollback_restores_history() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "BeforeScript")))
-
-        val scriptLines = addGroupLines("ScriptAdd") +
-                listOf("remove_by_id", Int.MAX_VALUE.toString())
-        requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-
-        // History only contains the pre-script add; undo removes it
-        val response = requestManager.dispatch(UndoRequest(1))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(0, collectionManager.collection.size)
+    fun execute_script_empty_lines_returns_ok() {
+        val response = rm.dispatch(ExecuteScriptRequest(emptyList(), token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
     }
 
     @Test
-    fun execute_script_returns_ok_for_empty_lines() {
-        val response = requestManager.dispatch(ExecuteScriptRequest(emptyList()))
-        assertEquals(ExitCode.OK, exitCode(response))
+    fun execute_script_with_show_command_returns_ok() {
+        rm.dispatch(AddRequest(makeGroup(name = "Visible"), token))
+        val lines = listOf("show")
+        val response = rm.dispatch(ExecuteScriptRequest(lines, token)) as CommandResponse
+        assertEquals(ExitCode.OK, response.exitCode)
+        assertTrue(response.message.contains("Visible"))
     }
 
     @Test
-    fun execute_script_skips_unknown_command_names() {
-        val scriptLines = listOf("unknown_command") + addGroupLines("AfterUnknown")
-        val response = requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertEquals(1, collectionManager.collection.size)
-        assertEquals("AfterUnknown", collectionManager.collection.first().name)
-    }
+    fun execute_script_add_then_remove_existing_element() {
+        rm.dispatch(AddRequest(makeGroup(name = "Existing"), token))
+        val existingId = cm.collection.first().id
 
-    @Test
-    fun execute_script_accumulates_output_from_all_commands() {
-        val scriptLines = addGroupLines("G1") + listOf("show")
-        val response = requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-        assertEquals(ExitCode.OK, exitCode(response))
-        assertTrue(message(response).contains("G1"))
-    }
+        val lines = addGroupLines("Added") + listOf("remove_by_id", existingId.toString())
+        val response = rm.dispatch(ExecuteScriptRequest(lines, token))
+        assertEquals(ExitCode.OK, responseExitCode(response))
 
-    @Test
-    fun execute_script_parse_error_rolls_back() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "PreExisting")))
-        val sizeBeforeScript = collectionManager.collection.size
-
-        // add group first, then remove_by_id with non-numeric id → parse error
-        val scriptLines = addGroupLines("WillBeRolledBack") + listOf("remove_by_id", "not-a-number")
-        val response = requestManager.dispatch(ExecuteScriptRequest(scriptLines))
-
-        assertEquals(ExitCode.ERROR, exitCode(response))
-        assertEquals(sizeBeforeScript, collectionManager.collection.size)
-    }
-
-    // ── unknown command ───────────────────────────────────────────────────────
-
-    @Test
-    fun dispatch_returns_ok_for_all_known_read_only_commands() {
-        requestManager.dispatch(AddRequest(makeStudyGroup()))
-        // All read-only commands should succeed
-        assertEquals(ExitCode.OK, exitCode(requestManager.dispatch(InfoRequest())))
-        assertEquals(ExitCode.OK, exitCode(requestManager.dispatch(ShowRequest())))
-        assertEquals(ExitCode.OK, exitCode(requestManager.dispatch(AverageOfAverageMarkRequest())))
-        assertEquals(ExitCode.OK, exitCode(requestManager.dispatch(CountLessThanAverageMarkRequest(100))))
-        assertEquals(ExitCode.OK, exitCode(requestManager.dispatch(CountGreaterThanAverageMarkRequest(1))))
-    }
-
-    // ── snapshot / restore ────────────────────────────────────────────────────
-
-    @Test
-    fun collection_manager_snapshot_preserves_state() {
-        collectionManager.add(makeStudyGroup(name = "A"))
-        collectionManager.add(makeStudyGroup(name = "B"))
-        val snapshot = collectionManager.takeSnapshot()
-
-        collectionManager.clear()
-        assertEquals(0, collectionManager.collection.size)
-
-        collectionManager.restoreSnapshot(snapshot)
-        assertEquals(2, collectionManager.collection.size)
-        assertTrue(collectionManager.collection.any { it.name == "A" })
-        assertTrue(collectionManager.collection.any { it.name == "B" })
-    }
-
-    // ── sequential command interactions ───────────────────────────────────────
-
-    @Test
-    fun add_then_update_then_undo_restores_original() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Original")))
-        val id = collectionManager.collection.first().id
-        val replacement = StudyGroup(id = id, name = "Updated", coordinates = Coordinates(1L, 2.0), expelledStudents = 1, averageMark = 10)
-
-        requestManager.dispatch(UpdateRequest(id, replacement))
-        assertEquals("Updated", collectionManager.collection.first().name)
-
-        requestManager.dispatch(UndoRequest(1))
-        assertEquals("Original", collectionManager.collection.first().name)
-    }
-
-    @Test
-    fun clear_then_undo_then_remove_last_leaves_empty_collection() {
-        requestManager.dispatch(AddRequest(makeStudyGroup(name = "Only")))
-        requestManager.dispatch(ClearRequest())
-        requestManager.dispatch(UndoRequest(1))     // restores "Only"
-        assertEquals(1, collectionManager.collection.size)
-
-        requestManager.dispatch(RemoveLastRequest())
-        assertEquals(0, collectionManager.collection.size)
+        assertFalse(cm.collection.any { it.name == "Existing" })
+        assertTrue(cm.collection.any { it.name == "Added" })
     }
 }

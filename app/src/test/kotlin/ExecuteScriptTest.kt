@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.commands.ExecuteScript
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -19,6 +20,7 @@ class ExecuteScriptTest {
             lastRequest = request
             return response
         }
+        override fun close() {}
     }
 
     private fun makeClient(response: IResponse = CommandResponse(ExitCode.OK, "")) = MockClient(response)
@@ -27,7 +29,7 @@ class ExecuteScriptTest {
     fun executeScript_sends_raw_lines_to_server() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val script = dir.resolve("script.txt")
@@ -61,7 +63,7 @@ class ExecuteScriptTest {
     fun executeScript_expands_nested_script_inline() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val inner = dir.resolve("inner.txt")
@@ -91,7 +93,7 @@ class ExecuteScriptTest {
     fun executeScript_detects_self_referencing_recursion() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val selfRef = dir.resolve("self.txt")
@@ -113,7 +115,7 @@ class ExecuteScriptTest {
     fun executeScript_detects_indirect_recursion() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val fileA = dir.resolve("a.txt")
@@ -132,7 +134,7 @@ class ExecuteScriptTest {
     fun executeScript_returns_error_for_nonexistent_file() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         console.reader = BufferedReader(InputStreamReader("/no/such/file.txt\n".byteInputStream()))
         val exitCode = command.execute()
@@ -145,7 +147,7 @@ class ExecuteScriptTest {
     fun executeScript_returns_ok_for_empty_file() {
         val client = makeClient()
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val empty = dir.resolve("empty.txt")
@@ -162,7 +164,7 @@ class ExecuteScriptTest {
     fun executeScript_propagates_server_exit_code() {
         val client = makeClient(CommandResponse(ExitCode.ERROR, "Ошибка сервера"))
         val console = TestConsole()
-        val command = ExecuteScript(client, console)
+        val command = ExecuteScript(client, console, UserSession())
 
         val dir = Files.createTempDirectory("lab6")
         val script = dir.resolve("s.txt")

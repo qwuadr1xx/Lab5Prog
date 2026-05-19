@@ -5,17 +5,15 @@ import net.requests.ExecuteScriptRequest
 import net.responses.CommandResponse
 import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 import java.io.File
 import java.io.FileNotFoundException
 
-/**
- * Команда execute_script
- * @author qwuadrixx
- */
 class ExecuteScript(
     private val rudpClient: IRUDPClient,
     private val console: IConsole,
+    private val session: UserSession
 ) : Command(name = "execute_script", description = "Считать и исполнить скрипт из указанного файла.") {
 
     override fun execute(): ExitCode {
@@ -39,7 +37,7 @@ class ExecuteScript(
 
             if (flatLines.isEmpty()) return ExitCode.OK
 
-            val response = rudpClient.sendAndReceive(ExecuteScriptRequest(flatLines)) as CommandResponse
+            val response = rudpClient.sendAndReceive(ExecuteScriptRequest(flatLines, session.token)) as CommandResponse
             if (response.message.isNotEmpty()) console.printObject(response.message)
             return response.exitCode
 

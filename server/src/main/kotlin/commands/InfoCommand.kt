@@ -7,7 +7,7 @@ import ru.qwuadrixx.managers.ICollectionManager
 import utils.ExitCode
 
 class InfoCommand(private val cm: ICollectionManager) : ServerCommand() {
-    override fun execute(request: IRequest): IResponse {
+    override fun execute(request: IRequest, userId: Long): IResponse {
         val info = buildString {
             appendLine("Тип коллекции: ${cm.collection.javaClass.simpleName}")
             appendLine("Дата инициализации: ${cm.lastInitTime}")

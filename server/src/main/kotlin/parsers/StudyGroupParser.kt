@@ -47,7 +47,8 @@ object StudyGroupParser {
                 expelledStudents = expelledStudents,
                 averageMark = averageMark,
                 semesterEnum = semester,
-                groupAdmin = groupAdmin
+                groupAdmin = groupAdmin,
+                ownerId = null
             )
         } else {
             StudyGroup(
@@ -57,7 +58,8 @@ object StudyGroupParser {
                 expelledStudents = expelledStudents,
                 averageMark = averageMark,
                 semesterEnum = semester,
-                groupAdmin = groupAdmin
+                groupAdmin = groupAdmin,
+                ownerId = null
             )
         }
     }

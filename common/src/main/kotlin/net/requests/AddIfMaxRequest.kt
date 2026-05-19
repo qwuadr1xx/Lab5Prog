@@ -5,5 +5,8 @@ import models.StudyGroup
 import utils.CommandName
 
 @Serializable
-class AddIfMaxRequest(val studyGroup: StudyGroup, override val commandName: CommandName = CommandName.ADD_IF_MAX) :
-    IRequest
+class AddIfMaxRequest(
+    val studyGroup: StudyGroup,
+    override val token: String,
+    override val commandName: CommandName = CommandName.ADD_IF_MAX
+) : IRequest

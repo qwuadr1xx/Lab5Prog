@@ -5,7 +5,7 @@ services:
       target: server
     environment:
       SERVER_PORT: "9090"
-      SAVE_FILE_NAME: shared/save.csv
+      SERVER_PEERS: "server2:9091"
     volumes:
       - shared-data:/app/shared
     networks:
@@ -18,7 +18,7 @@ services:
       target: server
     environment:
       SERVER_PORT: "9091"
-      SAVE_FILE_NAME: shared/save.csv
+      SERVER_PEERS: "server1:9090"
     volumes:
       - shared-data:/app/shared
     networks:

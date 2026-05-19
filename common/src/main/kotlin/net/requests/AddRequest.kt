@@ -5,4 +5,8 @@ import models.StudyGroup
 import utils.CommandName
 
 @Serializable
-class AddRequest(val studyGroup: StudyGroup, override val commandName: CommandName = CommandName.ADD) : IRequest
+class AddRequest(
+    val studyGroup: StudyGroup,
+    override val token: String,
+    override val commandName: CommandName = CommandName.ADD
+) : IRequest

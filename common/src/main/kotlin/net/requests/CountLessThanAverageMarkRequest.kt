@@ -6,5 +6,6 @@ import utils.CommandName
 @Serializable
 class CountLessThanAverageMarkRequest(
     val averageMark: Long,
+    override val token: String,
     override val commandName: CommandName = CommandName.COUNT_LESS_THAN_AVERAGE_MARK
 ) : IRequest

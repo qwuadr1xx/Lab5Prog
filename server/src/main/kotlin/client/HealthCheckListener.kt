@@ -1,25 +1,44 @@
+@file:OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+
 package ru.qwuadrixx.client
 
+import net.packet.RUDPPacket
 import org.slf4j.LoggerFactory
+import ru.qwuadrixx.di.ServerConfig
 import java.net.DatagramPacket
 import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.SocketTimeoutException
 
-class HealthCheckListener(port: Int) : Runnable {
+class HealthCheckListener(val socket: DatagramSocket, private val config: ServerConfig) {
 
-    private val socket = DatagramSocket(port)
     private val logger = LoggerFactory.getLogger(HealthCheckListener::class.java)
 
-    override fun run() {
-        logger.info("HealthCheckListener запущен на порту {}", socket.localPort)
-        val buffer = DatagramPacket(ByteArray(16), 16)
-        while (!Thread.currentThread().isInterrupted) {
+    fun registerWithBalancer() {
+        val balancerAddr = InetAddress.getByName(config.balancerHost)
+        val ping = RUDPPacket.byteArrayBALANCERPING()
+        val ackBuffer = DatagramPacket(ByteArray(16), 16)
+
+        repeat(config.maxRetries) { attempt ->
             try {
-                socket.receive(buffer)
-                val ack = byteArrayOf(1)
-                socket.send(DatagramPacket(ack, ack.size, buffer.address, buffer.port))
-            } catch (_: InterruptedException) {
-                break
-            } catch (_: Exception) {}
+                socket.send(DatagramPacket(ping, ping.size, balancerAddr, config.balancerPort))
+                socket.receive(ackBuffer)
+                val bytes = ackBuffer.data.copyOf(ackBuffer.length)
+                if (RUDPPacket.isByteArrayACK(bytes)) {
+                    logger.info("Сервер зарегистрирован на балансировщике {}:{} (порт {})",
+                        config.balancerHost, config.balancerPort, socket.localPort)
+                    return
+                }
+            } catch (_: SocketTimeoutException) {
+                logger.warn("Нет ответа от балансировщика (попытка {}/{})", attempt + 1, config.maxRetries)
+            }
         }
+        logger.error("Не удалось зарегистрироваться на балансировщике {}:{}", config.balancerHost, config.balancerPort)
+    }
+
+    fun port(): Int = socket.localPort
+
+    fun close() {
+        socket.close()
     }
 }

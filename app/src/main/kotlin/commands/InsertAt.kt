@@ -5,15 +5,15 @@ import net.responses.CommandResponse
 import ru.qwuadrixx.app.client.IRUDPClient
 import ru.qwuadrixx.app.console.IConsole
 import ru.qwuadrixx.app.models.askers.StudyGroupAsker
+import ru.qwuadrixx.app.session.UserSession
 import utils.ExitCode
 import utils.ensure
 
-/**
- * Команда insert_at
- * @author qwuadrixx
- */
-class InsertAt(private val rudpClient: IRUDPClient, private val console: IConsole) :
-    Command(name = "insert_at", description = "Добавить новый элемент в заданную позицию") {
+class InsertAt(
+    private val rudpClient: IRUDPClient,
+    private val console: IConsole,
+    private val session: UserSession
+) : Command(name = "insert_at", description = "Добавить новый элемент в заданную позицию") {
 
     override fun execute(): ExitCode {
         console.printLine("Использование команды insert_at")
@@ -23,7 +23,7 @@ class InsertAt(private val rudpClient: IRUDPClient, private val console: IConsol
                 val index = console.readLine().toInt()
                 ensure(index > 0) { "Значение index должно быть больше 0" }
                 val studyGroup = StudyGroupAsker(console = console).ask()
-                val response = rudpClient.sendAndReceive(InsertAtRequest(index, studyGroup)) as CommandResponse
+                val response = rudpClient.sendAndReceive(InsertAtRequest(index, studyGroup, session.token)) as CommandResponse
                 if (response.message.isNotEmpty()) console.printObject(response.message)
                 return response.exitCode
             } catch (e: Exception) {

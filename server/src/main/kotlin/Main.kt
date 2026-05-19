@@ -1,22 +1,31 @@
 package ru.qwuadrixx
 
 import org.koin.core.context.startKoin
-import org.slf4j.LoggerFactory
+import ru.qwuadrixx.client.DbChangeListener
 import ru.qwuadrixx.client.HealthCheckListener
 import ru.qwuadrixx.client.RUDPServer
 import ru.qwuadrixx.di.serverModule
-import kotlin.uuid.ExperimentalUuidApi
+import java.sql.Connection
 
-private val logger = LoggerFactory.getLogger("Main")
-
-@OptIn(ExperimentalUuidApi::class)
 fun main() {
     val koin = startKoin {
         modules(serverModule)
     }.koin
 
     val healthCheckListener = koin.get<HealthCheckListener>()
-    Thread(healthCheckListener, "health-check-listener").also { it.isDaemon = true }.start()
+    val dbChangeListener = koin.get<DbChangeListener>()
+    val rudpServer = koin.get<RUDPServer>()
 
-    koin.get<RUDPServer>().runner()
+    healthCheckListener.registerWithBalancer()
+
+    val dbListenerThread = Thread(dbChangeListener, "db-change-listener").also { it.isDaemon = true; it.start() }
+
+    Runtime.getRuntime().addShutdownHook(Thread({
+        rudpServer.shutdown()
+        healthCheckListener.close()
+        dbListenerThread.interrupt()
+        koin.get<Connection>().close()
+    }, "shutdown-hook"))
+
+    rudpServer.runner()
 }

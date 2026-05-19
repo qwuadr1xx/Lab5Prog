@@ -52,7 +52,7 @@ jooq {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = System.getenv("DB_SCHEMA") ?: "programming"
+                        inputSchema = System.getenv("DB_SCHEMA") ?: "s507981"
                     }
                     generate.apply {
                         isDeprecated = false
@@ -83,4 +83,12 @@ tasks.register<Jar>("fatJar") {
     }
     from(dependencies)
     with(tasks.jar.get())
+
+    val destPath = rootProject.projectDir.absolutePath
+    doLast {
+        val src = archiveFile.get().asFile
+        val dest = File(destPath).resolve("server.jar")
+        src.copyTo(dest, overwrite = true)
+        logger.lifecycle("server.jar скопирован в ${dest.absolutePath}")
+    }
 }

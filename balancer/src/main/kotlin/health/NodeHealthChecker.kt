@@ -1,39 +1,44 @@
+@file:OptIn(kotlin.uuid.ExperimentalUuidApi::class)
+
 package ru.qwuadrixx.balancer.health
 
+import net.packet.RUDPPacket
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.slf4j.LoggerFactory
-import ru.qwuadrixx.balancer.selector.ServerNode
+import ru.qwuadrixx.balancer.di.BalancerConfig
+import ru.qwuadrixx.balancer.manager.INodeManager
+import ru.qwuadrixx.balancer.selector.IServerNode
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.SocketTimeoutException
 
 class NodeHealthChecker(
-    private val nodes: List<ServerNode>,
-    private val healthPortOffset: Int,
-    private val intervalMs: Long,
-    private val timeoutMs: Int
-) : Runnable {
+    private val nodeManager: INodeManager
+) : KoinComponent, Runnable {
 
+    private val config: BalancerConfig by inject()
     private val logger = LoggerFactory.getLogger(NodeHealthChecker::class.java)
 
     override fun run() {
-        logger.info("NodeHealthChecker запущен (интервал {}мс, offset порта +{})", intervalMs, healthPortOffset)
+        logger.info("NodeHealthChecker запущен (интервал {}мс)", config.healthCheckIntervalMs)
         while (!Thread.currentThread().isInterrupted) {
-            nodes.filter { !it.isAvailable() }.forEach { checkNode(it) }
+            nodeManager.nodes().filter { !it.isAvailable() }.forEach { checkNode(it) }
             try {
-                Thread.sleep(intervalMs)
+                Thread.sleep(config.healthCheckIntervalMs)
             } catch (_: InterruptedException) {
                 break
             }
         }
     }
 
-    private fun checkNode(node: ServerNode) {
-        val healthPort = node.address.port + healthPortOffset
+    private fun checkNode(node: IServerNode) {
         try {
             DatagramSocket().use { socket ->
-                socket.soTimeout = timeoutMs
-                socket.send(DatagramPacket(byteArrayOf(0), 1, node.address.address, healthPort))
-                val ack = DatagramPacket(ByteArray(1), 1)
+                socket.soTimeout = config.socketTimeoutMs
+                val ping = RUDPPacket.byteArrayBALANCERPING()
+                socket.send(DatagramPacket(ping, ping.size, node.address.address, node.address.port))
+                val ack = DatagramPacket(ByteArray(16), 16)
                 socket.receive(ack)
                 node.markAlive()
                 logger.info("Узел {}:{} снова доступен", node.address.hostString, node.address.port)

@@ -1,4 +1,7 @@
-port: 9090
+port: 0
 maxRetries: 3
 socketTimeoutMs: 3000
-healthPortOffset: 1000
+fixedPoolSize: 4
+balancerHost: localhost
+balancerPort: 8080
+tokenSecret: default-rudp-token-secret
